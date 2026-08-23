@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>GS Pashukhadya — पशु आहार व्यापार</title>
+<meta name="description" content="GS Pashukhadya — party ledger, stock aur sale-purchase tracker">
+
+<!-- ===== PWA ===== -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#6B2333">
+<link rel="icon" href="icon-192.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="GS Pashukhadya">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5EFDD;
+  --paper-line:rgba(107,35,51,0.08);
+  --surface:#FFFDF7;
+  --cover:#6B2333;
+  --cover-dark:#4A1722;
+  --gold:#C99A2E;
+  --gold-soft:#F1DFAE;
+  --ink:#2A2018;
+  --ink-soft:#7A6C5A;
+  --credit:#3F7D53;
+  --debit:#B8433A;
+  --shadow:0 4px 18px rgba(74,23,34,0.10);
+  --radius:14px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  padding-bottom:78px;
+  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--paper-line) 28px);
+}
+h1,h2,h3,.brand,.big-number{font-family:'Fraunces',serif;}
+
+/* ===== HEADER ===== */
+.topbar{
+  background:linear-gradient(180deg,var(--cover),var(--cover-dark));
+  color:#F4E6C8;
+  padding:14px 16px 16px;
+  position:sticky;top:0;z-index:50;
+  box-shadow:0 3px 12px rgba(0,0,0,0.25);
+}
+.topbar-row{display:flex;align-items:center;gap:12px;}
+.seal{
+  width:46px;height:46px;border-radius:50%;
+  border:2px solid var(--gold);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fraunces',serif;font-weight:700;font-size:15px;
+  color:var(--gold);flex-shrink:0;
+  background:radial-gradient(circle at 35% 30%, rgba(201,154,46,0.18), transparent 70%);
+}
+.brand-block{flex:1;min-width:0;}
+.brand{font-size:20px;font-weight:700;letter-spacing:0.3px;line-height:1.15;}
+.brand small{display:block;font-family:'Inter',sans-serif;font-weight:500;font-size:11.5px;color:#D9C79C;margin-top:2px;letter-spacing:0.2px;}
+.sync-btn{
+  background:rgba(244,230,200,0.12);border:1px solid rgba(244,230,200,0.3);
+  color:#F4E6C8;width:36px;height:36px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
+}
+.sync-btn svg{width:18px;height:18px;}
+.sync-btn.spinning svg{animation:spin 0.9s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.sync-meta{font-size:10.5px;color:#C9B78B;margin-top:8px;padding-left:2px;}
+
+/* ===== CONTAINER ===== */
+.container{max-width:640px;margin:0 auto;padding:14px 12px 4px;}
+.section{display:none;}
+.section.active{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+/* ===== CARD w/ signature margin rule (ledger paper) ===== */
+.card{
+  background:var(--surface);
+  border-left:3px solid var(--cover);
+  border-radius:0 var(--radius) var(--radius) 0;
+  box-shadow:var(--shadow);
+  padding:14px 14px 14px 16px;
+  margin-bottom:12px;
+}
+.section-title{font-size:17px;font-weight:600;color:var(--cover-dark);margin:4px 2px 12px;display:flex;align-items:center;justify-content:space-between;}
+.section-title span.count{font-family:'Inter';font-size:12px;font-weight:600;color:var(--ink-soft);background:var(--gold-soft);padding:3px 9px;border-radius:20px;}
+
+/* ===== DASHBOARD STATS ===== */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.stat-card{
+  background:linear-gradient(160deg,var(--cover) 0%, var(--cover-dark) 100%);
+  color:#F4E6C8;border-radius:var(--radius);padding:14px 14px 12px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.stat-card.gold{background:linear-gradient(160deg,#C99A2E 0%, #9C7620 100%);color:#3A2A08;}
+.stat-card .label{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;opacity:0.85;font-weight:600;}
+.stat-card .big-number{font-size:22px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums;}
+.stat-card .seal-mark{position:absolute;right:-8px;bottom:-14px;font-size:56px;opacity:0.10;font-family:'Fraunces';}
+
+/* ===== SEARCH ===== */
+.search-box{position:relative;margin-bottom:12px;}
+.search-box input{
+  width:100%;padding:11px 14px 11px 38px;border:1px solid rgba(107,35,51,0.18);
+  border-radius:10px;font-size:14.5px;font-family:'Inter';background:var(--surface);color:var(--ink);
+}
+.search-box input:focus{outline:none;border-color:var(--cover);}
+.search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--ink-soft);}
+
+/* ===== LISTS ===== */
+.list-row{
+  display:flex;align-items:center;gap:10px;
+  padding:11px 4px;border-bottom:1px dashed rgba(107,35,51,0.15);
+  cursor:pointer;
+}
+.list-row:last-child{border-bottom:none;}
+.avatar{
+  width:36px;height:36px;border-radius:50%;background:var(--gold-soft);color:var(--cover-dark);
+  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;
+  font-family:'Fraunces';
+}
+.list-row .main{flex:1;min-width:0;}
+.list-row .title{font-weight:600;font-size:14.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.list-row .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.list-row .amt{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;flex-shrink:0;text-align:right;}
+.tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:0.3px;}
+.tag.sale{background:#E3F0E6;color:var(--credit);}
+.tag.purchase{background:#F5E3E1;color:var(--debit);}
+.tag.recv{background:#E3F0E6;color:var(--credit);}
+.tag.pay{background:#F5E3E1;color:var(--debit);}
+
+/* ===== TABLE (compact, mobile-scrollable) ===== */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px;}
+th{background:var(--cover);color:#F4E6C8;padding:9px 8px;text-align:left;font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:0.3px;position:sticky;top:0;}
+td{padding:9px 8px;border-bottom:1px solid rgba(107,35,51,0.08);white-space:nowrap;}
+tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
+.amt-cell{font-variant-numeric:tabular-nums;font-weight:600;}
+
+/* ===== EMPTY / LOADING ===== */
+.empty{text-align:center;padding:38px 16px;color:var(--ink-soft);}
+.empty svg{width:44px;height:44px;stroke:var(--gold);margin-bottom:10px;}
+.empty p{font-size:13.5px;}
+
+/* ===== LEDGER ===== */
+.ledger-select-wrap{margin-bottom:12px;}
+.ledger-select-wrap select{
+  width:100%;padding:11px 12px;border-radius:10px;border:1px solid rgba(107,35,51,0.18);
+  background:var(--surface);font-size:14.5px;font-family:'Inter';color:var(--ink);
+}
+.ledger-summary{display:flex;gap:10px;margin-bottom:12px;}
+.ledger-summary .pill{flex:1;background:var(--surface);border-radius:10px;padding:10px;text-align:center;box-shadow:var(--shadow);}
+.ledger-summary .pill .k{font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;font-weight:600;}
+.ledger-summary .pill .v{font-size:16px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums;}
+.share-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:var(--credit);color:#fff;border:none;padding:11px;border-radius:10px;
+  font-weight:600;font-size:13.5px;width:100%;margin-bottom:14px;cursor:pointer;
+}
+.share-btn svg{width:16px;height:16px;}
+
+/* ===== FILTER CHIPS ===== */
+.filter-chips{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;scrollbar-width:none;}
+.filter-chips::-webkit-scrollbar{display:none;}
+.chip{
+  flex-shrink:0;background:var(--surface);border:1px solid rgba(107,35,51,0.2);color:var(--ink-soft);
+  font-size:12.5px;font-weight:600;font-family:'Inter';padding:7px 13px;border-radius:20px;
+  white-space:nowrap;cursor:pointer;transition:all .15s;
+}
+.chip.active{background:var(--cover);color:#F4E6C8;border-color:var(--cover);}
+.chip-row-label{font-size:11px;color:var(--ink-soft);font-weight:600;margin:2px 2px 6px;text-transform:uppercase;letter-spacing:0.4px;}
+
+/* ===== LOAD MORE ===== */
+.loadmore-wrap{text-align:center;margin-top:12px;}
+.loadmore-btn{
+  background:transparent;border:1.5px dashed rgba(107,35,51,0.35);color:var(--cover-dark);
+  font-family:'Inter';font-weight:700;font-size:13px;padding:10px 20px;border-radius:10px;
+  cursor:pointer;width:100%;
+}
+.loadmore-btn:active{background:var(--accent-color,var(--gold-soft));}
+.loadmore-hint{font-size:11px;color:var(--ink-soft);margin-top:6px;}
+
+/* ===== OPENING ROW (ledger, pinned to bottom = oldest) ===== */
+tr.opening-row td{border-top:2px solid var(--gold);}
+
+/* ===== INSTALL BANNER ===== */
+.install-banner{
+  display:none;align-items:center;gap:10px;background:var(--gold-soft);color:var(--cover-dark);
+  padding:10px 12px;border-radius:12px;margin-bottom:12px;box-shadow:var(--shadow);
+}
+.install-banner.show{display:flex;}
+.install-banner .txt{flex:1;font-size:12.5px;font-weight:600;line-height:1.3;}
+.install-banner button.go{
+  background:var(--cover);color:#F4E6C8;border:none;padding:8px 14px;border-radius:8px;
+  font-weight:700;font-size:12.5px;font-family:'Inter';cursor:pointer;flex-shrink:0;
+}
+.install-banner button.close{background:none;border:none;color:var(--cover-dark);font-size:18px;line-height:1;cursor:pointer;padding:4px;flex-shrink:0;opacity:0.6;}
+
+/* ===== BOTTOM NAV ===== */
+.bottomnav{
+  position:fixed;bottom:0;left:0;right:0;background:var(--surface);
+  border-top:1px solid rgba(107,35,51,0.14);
+  display:flex;justify-content:space-around;padding:6px 2px 8px;z-index:50;
+  box-shadow:0 -4px 14px rgba(74,23,34,0.10);
+}
+.navbtn{
+  background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:var(--ink-soft);font-size:10px;font-weight:600;padding:5px 4px;cursor:pointer;flex:1;
+  font-family:'Inter';
+}
+.navbtn svg{width:20px;height:20px;stroke:var(--ink-soft);fill:none;stroke-width:1.8;}
+.navbtn.active{color:var(--cover);}
+.navbtn.active svg{stroke:var(--cover);}
+
+@media(min-width:640px){
+  .stats-grid{grid-template-columns:repeat(3,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-row">
+    <div class="seal">GS</div>
+    <div class="brand-block">
+      <div class="brand">GS Pashukhadya</div>
+      <small>प्रोप्राइटर: मुख्तार खान (खान बाबा)</small>
+    </div>
+    <button class="sync-btn" id="refreshBtn" onclick="loadData(true)" aria-label="Refresh">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.36M21 4v6h-6"/></svg>
+    </button>
+  </div>
+  <div class="sync-meta" id="syncMeta">डेटा लोड हो रहा है...</div>
+</div>
+
+<div class="container">
+
+  <div class="install-banner" id="installBanner">
+    <span class="txt">📲 GS Pashukhadya ko apne phone ki home screen par app ki tarah install karo</span>
+    <button class="go" id="installGoBtn">Install</button>
+    <button class="close" id="installCloseBtn" aria-label="Band karo">×</button>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div id="dashboard" class="section active">
+    <div class="stats-grid">
+      <div class="stat-card"><div class="label">कुल Parties</div><div class="big-number" id="totalParties">0</div><div class="seal-mark">◆</div></div>
+      <div class="stat-card"><div class="label">स्टॉक आइटम</div><div class="big-number" id="totalStockItems">0</div><div class="seal-mark">◆</div></div>
+      <div class="stat-card"><div class="label">कुल Purchase</div><div class="big-number" id="totalPurchase">₹0</div><div class="seal-mark">◆</div></div>
+      <div class="stat-card" id="lowStockCard"><div class="label">कम/नेगेटिव स्टॉक</div><div class="big-number" id="lowStockCount">0</div><div class="seal-mark">◆</div></div>
+      <div class="stat-card gold"><div class="label">Outstanding (देना बाकी)</div><div class="big-number" id="totalOutstanding">₹0</div><div class="seal-mark">◆</div></div>
+      <div class="stat-card"><div class="label">कुल Payments</div><div class="big-number" id="totalPayments">₹0</div><div class="seal-mark">◆</div></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">🔴 Top Outstanding Parties</div>
+      <div id="topDebtors"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">📦 Stock Summary <span class="count" id="stockCount">0</span></div>
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input type="text" id="stockSearch" placeholder="Item search karo..." oninput="populateStock(true)">
+      </div>
+      <div id="stockList"></div>
+      <div class="loadmore-wrap" id="stockMoreWrap" style="display:none;">
+        <button class="loadmore-btn" onclick="loadMore('stock', populateStock)">Aur Items Dikhao</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Recent Activity</div>
+      <div class="filter-chips" id="dashboardRangeChips">
+        <button class="chip active" data-range="all" onclick="setRange('dashboard','all',this)">सब</button>
+        <button class="chip" data-range="today" onclick="setRange('dashboard','today',this)">आज</button>
+        <button class="chip" data-range="week" onclick="setRange('dashboard','week',this)">यह हफ्ता</button>
+        <button class="chip" data-range="month" onclick="setRange('dashboard','month',this)">यह महीना</button>
+      </div>
+      <div id="recentActivity"></div>
+    </div>
+  </div>
+
+  <!-- PARTIES -->
+  <div id="parties" class="section">
+    <div class="section-title">Party Masters <span class="count" id="partiesCount">0</span></div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="partySearch" placeholder="Party naam search karo..." oninput="populateParties(true)">
+    </div>
+    <div class="filter-chips" id="partiesFilterChips">
+      <button class="chip active" data-f="all" onclick="setPartyFilter('all',this)">सब</button>
+      <button class="chip" data-f="debtor" onclick="setPartyFilter('debtor',this)">🔴 लेना है</button>
+      <button class="chip" data-f="creditor" onclick="setPartyFilter('creditor',this)">🟢 देना है</button>
+      <button class="chip" data-f="clear" onclick="setPartyFilter('clear',this)">✅ क्लियर</button>
+    </div>
+    <div class="card" style="padding-left:14px;border-left:none;" id="partiesList"></div>
+    <div class="loadmore-wrap" id="partiesMoreWrap" style="display:none;">
+      <button class="loadmore-btn" onclick="loadMore('parties', populateParties)">Aur Parties Dikhao</button>
+    </div>
+  </div>
+
+  <!-- SALES -->
+  <div id="sales" class="section">
+    <div class="section-title">Sale Entries <span class="count" id="salesCount">0</span></div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="salesSearch" placeholder="Party ya item search karo..." oninput="populateSales(true)">
+    </div>
+    <div class="filter-chips" id="salesRangeChips">
+      <button class="chip active" data-range="all" onclick="setRange('sales','all',this)">सब</button>
+      <button class="chip" data-range="today" onclick="setRange('sales','today',this)">आज</button>
+      <button class="chip" data-range="week" onclick="setRange('sales','week',this)">यह हफ्ता</button>
+      <button class="chip" data-range="month" onclick="setRange('sales','month',this)">यह महीना</button>
+    </div>
+    <div class="card table-wrap" style="border-left:none;padding:0;">
+      <table id="salesTable">
+        <thead><tr><th>Date</th><th>Bill</th><th>Party</th><th>Item</th><th>Qty</th><th>Price</th><th>Amount</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="loadmore-wrap" id="salesMoreWrap" style="display:none;">
+      <button class="loadmore-btn" onclick="loadMore('sales', populateSales)">Aur Entries Dikhao</button>
+    </div>
+  </div>
+
+  <!-- PURCHASE -->
+  <div id="purchase" class="section">
+    <div class="section-title">Purchase Entries <span class="count" id="purchaseCount">0</span></div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="purchaseSearch" placeholder="Party ya item search karo..." oninput="populatePurchase(true)">
+    </div>
+    <div class="filter-chips" id="purchaseRangeChips">
+      <button class="chip active" data-range="all" onclick="setRange('purchase','all',this)">सब</button>
+      <button class="chip" data-range="today" onclick="setRange('purchase','today',this)">आज</button>
+      <button class="chip" data-range="week" onclick="setRange('purchase','week',this)">यह हफ्ता</button>
+      <button class="chip" data-range="month" onclick="setRange('purchase','month',this)">यह महीना</button>
+    </div>
+    <div class="card table-wrap" style="border-left:none;padding:0;">
+      <table id="purchaseTable">
+        <thead><tr><th>Date</th><th>Bill</th><th>Party</th><th>Item</th><th>Qty</th><th>Price</th><th>Amount</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="loadmore-wrap" id="purchaseMoreWrap" style="display:none;">
+      <button class="loadmore-btn" onclick="loadMore('purchase', populatePurchase)">Aur Entries Dikhao</button>
+    </div>
+  </div>
+
+  <!-- LEDGER -->
+  <div id="ledger" class="section">
+    <div class="section-title">Party Ledger</div>
+    <div class="ledger-select-wrap">
+      <select id="partySelect" onchange="showLedger()">
+        <option>Choose Party...</option>
+      </select>
+    </div>
+    <div id="ledgerSummaryWrap"></div>
+    <button class="share-btn" id="shareLedgerBtn" onclick="shareLedger()" style="display:none;">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2z"/></svg>
+      WhatsApp पर भेजो
+    </button>
+    <div class="card table-wrap" style="border-left:none;padding:0;">
+      <table id="ledgerTable">
+        <thead><tr><th>Date</th><th>Bill</th><th>Particulars</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- PAYMENTS -->
+  <div id="payments" class="section">
+    <div class="section-title">Receipts &amp; Payments <span class="count" id="paymentsCount">0</span></div>
+    <div class="search-box">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" id="paymentsSearch" placeholder="Account naam search karo..." oninput="populatePayments(true)">
+    </div>
+    <div class="filter-chips" id="paymentsRangeChips">
+      <button class="chip active" data-range="all" onclick="setRange('payments','all',this)">सब</button>
+      <button class="chip" data-range="today" onclick="setRange('payments','today',this)">आज</button>
+      <button class="chip" data-range="week" onclick="setRange('payments','week',this)">यह हफ्ता</button>
+      <button class="chip" data-range="month" onclick="setRange('payments','month',this)">यह महीना</button>
+    </div>
+    <div class="card table-wrap" style="border-left:none;padding:0;">
+      <table id="paymentsTable">
+        <thead><tr><th>Date</th><th>Bill</th><th>Account</th><th>Debit</th><th>Credit</th><th>Narration</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+    <div class="loadmore-wrap" id="paymentsMoreWrap" style="display:none;">
+      <button class="loadmore-btn" onclick="loadMore('payments', populatePayments)">Aur Entries Dikhao</button>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottomnav">
+  <button class="navbtn active" data-sec="dashboard" onclick="showSection('dashboard',this)">
+    <svg viewBox="0 0 24 24"><path d="M3 11.5 12 4l9 7.5"/><path d="M5 10v10h14V10"/></svg>Home
+  </button>
+  <button class="navbtn" data-sec="parties" onclick="showSection('parties',this)">
+    <svg viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><circle cx="17.5" cy="9" r="2.4"/><path d="M15.5 14.2c2.8.3 4.9 2.3 4.9 5.3"/></svg>Parties
+  </button>
+  <button class="navbtn" data-sec="sales" onclick="showSection('sales',this)">
+    <svg viewBox="0 0 24 24"><path d="M3 3h2l2.4 12.2A2 2 0 0 0 9.36 17H18a2 2 0 0 0 2-1.6L21.5 8H6"/><circle cx="9.5" cy="21" r="1.3"/><circle cx="17.5" cy="21" r="1.3"/></svg>Sales
+  </button>
+  <button class="navbtn" data-sec="purchase" onclick="showSection('purchase',this)">
+    <svg viewBox="0 0 24 24"><path d="M3 7h15l2 12H5z"/><path d="M8 7a3.5 3.5 0 0 1 7 0"/></svg>Purchase
+  </button>
+  <button class="navbtn" data-sec="ledger" onclick="showSection('ledger',this)">
+    <svg viewBox="0 0 24 24"><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2H20v18H6.5A2.5 2.5 0 0 0 4 22.5z"/><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/></svg>Ledger
+  </button>
+  <button class="navbtn" data-sec="payments" onclick="showSection('payments',this)">
+    <svg viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="13" rx="2"/><path d="M2.5 10h19"/><circle cx="17" cy="14.5" r="1"/></svg>Khata
+  </button>
+</div>
+
+<script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyn0ZdABa3yLWfxzH8d163FrE7OU0DLsje3GfwJ9D00nM8s1qb534thcR-5elbFP6hJ/exec";
+const CACHE_KEY = 'gsPashukhadyaCache';
+let allData = {};
+let balancesMap = {}; // partyName -> {debit,credit,lastDate}
+
+// ===== HELPERS =====
+function esc(v){
+  if(v===undefined||v===null) return '';
+  return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function fmt(n){
+  n = parseFloat(n)||0;
+  return '₹' + n.toLocaleString('en-IN', {maximumFractionDigits:0});
+}
+function forwardFill(rows, cols){
+  const filled = []; const last = {};
+  rows.forEach(row=>{
+    const copy = row.slice();
+    cols.forEach(c=>{
+      if(copy[c]!==undefined && copy[c]!=='' && copy[c]!==null){ last[c]=copy[c]; }
+      else if(last[c]!==undefined){ copy[c]=last[c]; }
+    });
+    filled.push(copy);
+  });
+  return filled;
+}
+// Kuch cells Google Sheets me "Date" type ke hain (text nahi), aur Apps Script unhe
+// JSON me "2026-03-31T18:30:00.000Z" jaisi ISO string bana deta hai. `new Date(...)` se
+// parse karke local (IST) date nikalne par sahi din wapas mil jaata hai. Baaki cells
+// normal "DD-MM-YYYY" text hain, unhe seedha parse karte hain.
+function parseAnyDate(str){
+  if(!str) return new Date(NaN);
+  const s = String(str).trim();
+  if(s.includes('T') && s.includes('Z')){
+    return new Date(s); // browser local time (IST) se sahi din nikal aata hai
+  }
+  const parts = s.split('-');
+  if(parts.length===3){
+    if(parts[0].length===4) return new Date(+parts[0], +parts[1]-1, +parts[2]); // YYYY-MM-DD
+    return new Date(+parts[2], +parts[1]-1, +parts[0]); // DD-MM-YYYY
+  }
+  const d = new Date(s);
+  return d;
+}
+function parseIndianDate(str){ return parseAnyDate(str); }
+// Table/ledger me dikhane ke liye hamesha DD-MM-YYYY format me consistent date string.
+function formatDateDisplay(str){
+  const d = parseAnyDate(str);
+  if(isNaN(d.getTime())) return esc(str);
+  const dd = String(d.getDate()).padStart(2,'0');
+  const mm = String(d.getMonth()+1).padStart(2,'0');
+  return `${dd}-${mm}-${d.getFullYear()}`;
+}
+function setRows(sel, arr){ document.querySelector(sel).innerHTML = arr.join(''); }
+function initials(name){
+  return (name||'?').trim().split(/\s+/).slice(0,2).map(w=>w[0]).join('').toUpperCase();
+}
+
+// ===== FILTERS: date range, party status, pagination =====
+// Data jyada hone par pura list ek saath render karna slow ho sakta hai, isliye:
+// (a) date-range chips se list chhoti ho jaati hai, (b) "Aur Dikhao" se page-by-page load hota hai.
+const PAGE_STEP = 25;
+let pageState = { sales: PAGE_STEP, purchase: PAGE_STEP, payments: PAGE_STEP, parties: PAGE_STEP, stock: 50 };
+let rangeState = { dashboard: 'all', sales: 'all', purchase: 'all', payments: 'all' };
+let partyFilterState = 'all';
+
+function inRange(dateStr, range){
+  if(range==='all' || !range) return true;
+  const d = parseAnyDate(dateStr);
+  if(isNaN(d.getTime())) return true;
+  const now = new Date(); now.setHours(0,0,0,0);
+  const dd = new Date(d); dd.setHours(0,0,0,0);
+  if(range==='today') return dd.getTime()===now.getTime();
+  if(range==='week'){ const from = new Date(now); from.setDate(from.getDate()-6); return dd>=from && dd<=now; }
+  if(range==='month'){ const from = new Date(now); from.setDate(from.getDate()-29); return dd>=from && dd<=now; }
+  return true;
+}
+function setRange(section, range, btn){
+  rangeState[section] = range;
+  btn.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  pageState[section] = PAGE_STEP;
+  ({dashboard:updateDashboard, sales:populateSales, purchase:populatePurchase, payments:populatePayments})[section]();
+}
+function setPartyFilter(f, btn){
+  partyFilterState = f;
+  btn.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  btn.classList.add('active');
+  pageState.parties = PAGE_STEP;
+  populateParties();
+}
+function loadMore(key, fn){
+  pageState[key] += (key==='stock' ? 50 : PAGE_STEP);
+  fn();
+}
+function renderMoreBtn(key, wrapId, totalCount){
+  const wrap = document.getElementById(wrapId);
+  if(!wrap) return;
+  const shown = Math.min(pageState[key], totalCount);
+  const remaining = totalCount - shown;
+  if(remaining > 0){
+    wrap.style.display = 'block';
+    wrap.querySelector('.loadmore-btn').textContent = `Aur Dikhao (${remaining} baaki)`;
+  } else {
+    wrap.style.display = 'none';
+  }
+}
+
+// ===== NAV =====
+function showSection(id, btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.navbtn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function openPartyLedger(name){
+  document.getElementById('partySelect').value = name;
+  showSection('ledger', document.querySelector('.navbtn[data-sec="ledger"]'));
+  showLedger();
+}
+
+// ===== LOAD =====
+function loadData(forceSpin){
+  const btn = document.getElementById('refreshBtn');
+  if(forceSpin) btn.classList.add('spinning');
+  document.getElementById('syncMeta').textContent = 'डेटा लोड हो रहा है...';
+
+  fetch(SCRIPT_URL).then(r=>r.json()).then(raw=>{
+    processData(raw);
+    localStorage.setItem(CACHE_KEY, JSON.stringify({raw, time:Date.now()}));
+    setSyncMeta();
+    btn.classList.remove('spinning');
+  }).catch(err=>{
+    console.error('Load error:', err);
+    btn.classList.remove('spinning');
+    const cached = localStorage.getItem(CACHE_KEY);
+    if(cached){
+      const {raw, time} = JSON.parse(cached);
+      processData(raw);
+      document.getElementById('syncMeta').textContent = '⚠️ Offline — पुराना data दिखा रहे हैं (' + new Date(time).toLocaleString('en-IN') + ')';
+    } else {
+      document.getElementById('syncMeta').textContent = '⚠️ Data load नहीं हुआ। Internet check करो।';
+    }
+  });
+}
+
+function setSyncMeta(){
+  document.getElementById('syncMeta').textContent = 'Last update: ' + new Date().toLocaleString('en-IN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'});
+}
+
+function processData(raw){
+  allData = {
+    masters: raw.masters || [],
+    sales: [raw.sales && raw.sales[0] || [], ...forwardFill((raw.sales||[]).slice(1),[0,1,2])],
+    purchase: [raw.purchase && raw.purchase[0] || [], ...forwardFill((raw.purchase||[]).slice(1),[0,1,2])],
+    receipts: [raw.receipts && raw.receipts[0] || [], ...forwardFill((raw.receipts||[]).slice(1),[0])],
+    payments: [raw.payments && raw.payments[0] || [], ...forwardFill((raw.payments||[]).slice(1),[0])]
+  };
+  computeBalances();
+  computeStock();
+  populateAll();
+}
+
+// single-pass balance computation (avoids O(n * parties) that froze the page before)
+// Party balance: Sale = udhaar diya -> party ka debit badhta hai (party ko hume dena hai... party HUME dena hai)
+// Receipt = party se payment mila -> credit badhta hai (uska debit kam ho jata hai)
+// Purchase = humne maal khareeda -> supplier ka credit badhta hai (hum supplier ko dena hai)
+// Payment = humne supplier ko diya -> uska debit badhta hai (jo hum dena the wo kam hua)
+// balance = debit - credit  → positive = party HUMSE lena hai (customer's outstanding), negative = HUM party ko dena hai (supplier payable)
+// Masters sheet: A=Sr No, B=Party Name, C=Type (Sundry Debtors/Sundry Creditors/Expenses..), D=Opening Amount, E=Stock Item, F=Opening Stock
+function isCreditorType(type){ return /creditor/i.test(type||''); }
+function computeBalances(){
+  balancesMap = {};
+  const touch = (name, debit, credit, date)=>{
+    if(!name) return;
+    if(!balancesMap[name]) balancesMap[name] = {debit:0, credit:0, lastDate:date};
+    balancesMap[name].debit += debit;
+    balancesMap[name].credit += credit;
+    if(date) balancesMap[name].lastDate = date;
+  };
+  // Opening balances (Masters column D) — Sundry Creditors ka opening credit side jaata hai
+  // (hum unhe dena hai), baaki sab (Sundry Debtors, Expenses, etc) debit side jaata hai.
+  (allData.masters||[]).slice(1).forEach(r=>{
+    const name = r[1], type = r[2], opening = parseFloat(r[3])||0;
+    if(!name || !opening) return;
+    if(isCreditorType(type)) touch(name, 0, opening, null);
+    else touch(name, opening, 0, null);
+  });
+  allData.sales.slice(1).forEach(r=> touch(r[2], parseFloat(r[7])||0, 0, r[0]));
+  allData.purchase.slice(1).forEach(r=> touch(r[2], 0, parseFloat(r[7])||0, r[0]));
+  allData.receipts.slice(1).forEach(r=> touch(r[2], parseFloat(r[3])||0, parseFloat(r[4])||0, r[0]));
+  allData.payments.slice(1).forEach(r=> touch(r[2], parseFloat(r[3])||0, parseFloat(r[4])||0, r[0]));
+}
+
+// Stock: Masters sheet ke Stock Items column (E) se item list aur Opening Stock (F) milta hai.
+// Purchase entries se qty stock me add hoti hai, Sale entries se stock me se ghatti hai.
+// Item naam Sale/Purchase ki "Item Details" column se match karke jodte hain.
+let stockMap = {};
+function computeStock(){
+  stockMap = {};
+  const touch = (item, unit, purchased, sold, opening)=>{
+    if(!item) return;
+    const key = String(item).trim();
+    if(!key) return;
+    if(!stockMap[key]) stockMap[key] = {opening:0, purchased:0, sold:0, unit:unit||''};
+    stockMap[key].purchased += purchased;
+    stockMap[key].sold += sold;
+    stockMap[key].opening += opening||0;
+    if(unit) stockMap[key].unit = unit;
+  };
+  // Masters ki Stock Items list (col E) se sab items apne Opening Stock (col F) ke saath register karo
+  (allData.masters||[]).slice(1).forEach(r=>{
+    const item = r[4];
+    if(item) touch(item, '', 0, 0, parseFloat(r[5])||0);
+  });
+  allData.sales.slice(1).forEach(r=> touch(r[3], r[5], 0, parseFloat(r[4])||0, 0));
+  allData.purchase.slice(1).forEach(r=> touch(r[3], r[5], parseFloat(r[4])||0, 0, 0));
+}
+
+// ===== POPULATE ALL =====
+function populateAll(){
+  populateParties();
+  populateSales();
+  populatePurchase();
+  populatePayments();
+  populateStock();
+  updateDashboard();
+}
+
+// ===== DASHBOARD =====
+function updateDashboard(){
+  const masters = allData.masters||[];
+  const sales = allData.sales.slice(1);
+  const purchase = allData.purchase.slice(1);
+  const receipts = allData.receipts.slice(1);
+  const payments = allData.payments.slice(1);
+
+  const totalSales = sales.reduce((s,r)=>s+(parseFloat(r[7])||0),0);
+  const totalPurchase = purchase.reduce((s,r)=>s+(parseFloat(r[7])||0),0);
+  const totalReceipts = receipts.reduce((s,r)=>s+(parseFloat(r[4])||0),0);
+  const totalPaymentsOut = payments.reduce((s,r)=>s+(parseFloat(r[3])||0),0);
+
+  let outstanding = 0;
+  const debtors = [];
+  Object.keys(balancesMap).forEach(name=>{
+    const b = balancesMap[name].debit - balancesMap[name].credit;
+    if(b>0){ outstanding += b; debtors.push({name, balance:b}); }
+  });
+  debtors.sort((a,b)=>b.balance-a.balance);
+
+  const stockItems = Object.keys(stockMap);
+  const lowStock = stockItems.filter(name => (stockMap[name].opening + stockMap[name].purchased - stockMap[name].sold) <= 0).length;
+
+  document.getElementById('totalParties').textContent = masters.slice(1).filter(r=>r[1]).length;
+  document.getElementById('totalStockItems').textContent = stockItems.length;
+  document.getElementById('totalPurchase').textContent = fmt(totalPurchase);
+  document.getElementById('lowStockCount').textContent = lowStock;
+  document.getElementById('lowStockCard').classList.toggle('gold', lowStock>0);
+  document.getElementById('totalOutstanding').textContent = fmt(outstanding);
+  document.getElementById('totalPayments').textContent = fmt(totalPaymentsOut);
+
+  // top debtors
+  const top = debtors.slice(0,5);
+  if(top.length===0){
+    document.getElementById('topDebtors').innerHTML = '<div class="empty" style="padding:16px;"><p>Koi outstanding nahi hai 🎉</p></div>';
+  } else {
+    setRows('#topDebtors', top.map(d=>`
+      <div class="list-row" onclick="openPartyLedger('${esc(d.name).replace(/'/g,"\\'")}')">
+        <div class="avatar">${esc(initials(d.name))}</div>
+        <div class="main"><div class="title">${esc(d.name)}</div><div class="sub">देना बाकी</div></div>
+        <div class="amt" style="color:var(--debit)">${fmt(d.balance)}</div>
+      </div>`));
+  }
+
+  // recent activity — nayi entry sabse upar; date-filter chips ke hisaab se
+  const actWindow = 200; // date-filter theek se kaam kare, isliye bade window se filter karte hain
+  const activity = [
+    ...sales.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[7], type:'sale'})),
+    ...purchase.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[7], type:'purchase'})),
+    ...receipts.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[4]||r[3], type:'recv'})),
+    ...payments.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[3]||r[4], type:'pay'}))
+  ].filter(a=>inRange(a.date, rangeState.dashboard))
+   .sort((a,b)=>parseIndianDate(b.date)-parseIndianDate(a.date))
+   .slice(0, rangeState.dashboard==='all' ? 8 : 25);
+
+  if(activity.length===0){
+    document.getElementById('recentActivity').innerHTML = '<div class="empty" style="padding:16px;"><p>Is period me koi activity nahi</p></div>';
+  } else {
+    const labels = {sale:'Sale', purchase:'Purchase', recv:'Receipt', pay:'Payment'};
+    setRows('#recentActivity', activity.map(a=>`
+      <div class="list-row">
+        <div class="avatar">${esc(initials(a.name))}</div>
+        <div class="main">
+          <div class="title">${esc(a.name)||'-'}</div>
+          <div class="sub">${formatDateDisplay(a.date)} · <span class="tag ${a.type}">${labels[a.type]}</span></div>
+        </div>
+        <div class="amt">${fmt(a.amount)}</div>
+      </div>`));
+  }
+}
+
+// ===== STOCK =====
+function populateStock(resetPage){
+  if(resetPage) pageState.stock = 50;
+  const q = (document.getElementById('stockSearch')?.value||'').toLowerCase();
+  let items = Object.keys(stockMap).map(name=>({
+    name, unit: stockMap[name].unit,
+    balance: stockMap[name].opening + stockMap[name].purchased - stockMap[name].sold,
+    opening: stockMap[name].opening, purchased: stockMap[name].purchased, sold: stockMap[name].sold
+  }));
+  if(q) items = items.filter(i=>i.name.toLowerCase().includes(q));
+  items.sort((a,b)=> a.balance - b.balance); // low/negative stock pehle dikhega
+
+  document.getElementById('stockCount').textContent = items.length;
+
+  if(items.length===0){
+    document.getElementById('stockList').innerHTML = '<div class="empty" style="padding:16px;"><p>Koi item nahi mila</p></div>';
+    document.getElementById('stockMoreWrap').style.display = 'none';
+    return;
+  }
+  setRows('#stockList', items.slice(0,pageState.stock).map(i=>`
+    <div class="list-row">
+      <div class="avatar">${esc(initials(i.name))}</div>
+      <div class="main">
+        <div class="title">${esc(i.name)}</div>
+        <div class="sub">${i.opening?`Opening ${i.opening} · `:''}Purchase ${i.purchased} · Sale ${i.sold}</div>
+      </div>
+      <div class="amt" style="color:${i.balance<0?'var(--debit)':'var(--ink)'}">${i.balance} ${esc(i.unit)}</div>
+    </div>`));
+  renderMoreBtn('stock','stockMoreWrap',items.length);
+}
+
+// ===== PARTIES =====
+function populateParties(resetPage){
+  if(resetPage) pageState.parties = PAGE_STEP;
+  const rows = (allData.masters||[]).slice(1).filter(r=>r[1]);
+  const q = (document.getElementById('partySearch')?.value||'').toLowerCase();
+  let filtered = q ? rows.filter(r=>String(r[1]||'').toLowerCase().includes(q)) : rows.slice();
+
+  filtered = filtered.filter(r=>{
+    if(partyFilterState==='all') return true;
+    const bal = balancesMap[r[1]];
+    const balAmt = bal ? bal.debit-bal.credit : 0;
+    if(partyFilterState==='debtor') return balAmt>0;
+    if(partyFilterState==='creditor') return balAmt<0;
+    if(partyFilterState==='clear') return balAmt===0;
+    return true;
+  });
+
+  document.getElementById('partiesCount').textContent = filtered.length;
+
+  if(filtered.length===0){
+    document.getElementById('partiesList').innerHTML = `<div class="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <p>Koi party nahi mili</p></div>`;
+  } else {
+    setRows('#partiesList', filtered.slice(0,pageState.parties).map(r=>{
+      const bal = balancesMap[r[1]];
+      const balAmt = bal ? bal.debit-bal.credit : 0;
+      const opening = parseFloat(r[3])||0;
+      return `<div class="list-row" onclick="openPartyLedger('${esc(r[1]).replace(/'/g,"\\'")}')">
+        <div class="avatar">${esc(initials(r[1]))}</div>
+        <div class="main">
+          <div class="title">${esc(r[1])}</div>
+          <div class="sub">${esc(r[2]||'-')}${opening?' · Opening '+fmt(opening):''}</div>
+        </div>
+        <div class="amt" style="color:${balAmt>0?'var(--debit)':balAmt<0?'var(--credit)':'var(--ink-soft)'}">${fmt(Math.abs(balAmt))}</div>
+      </div>`;
+    }));
+  }
+  renderMoreBtn('parties','partiesMoreWrap',filtered.length);
+
+  const options = rows.map(r=>`<option value="${esc(r[1])}">${esc(r[1])}</option>`);
+  const sel = document.getElementById('partySelect');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Choose Party...</option>' + options.join('');
+  if(cur) sel.value = cur;
+}
+
+// ===== SALES ===== (nayi entry sabse upar dikhti hai)
+function populateSales(resetPage){
+  if(resetPage) pageState.sales = PAGE_STEP;
+  const rows = (allData.sales||[]).slice(1);
+  const q = (document.getElementById('salesSearch')?.value||'').toLowerCase();
+  let filtered = q ? rows.filter(r=>(String(r[2]||'')+String(r[3]||'')).toLowerCase().includes(q)) : rows.slice();
+  filtered = filtered.filter(r=>inRange(r[0], rangeState.sales));
+  filtered.sort((a,b)=>parseIndianDate(b[0])-parseIndianDate(a[0]));
+  document.getElementById('salesCount').textContent = filtered.length;
+
+  setRows('#salesTable tbody', filtered.slice(0,pageState.sales).map(r=>`
+    <tr>
+      <td>${formatDateDisplay(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td>
+      <td>${esc(r[3])}</td><td>${esc(r[4])}</td>
+      <td class="amt-cell">${fmt(r[6])}</td><td class="amt-cell">${fmt(r[7])}</td>
+    </tr>`));
+  renderMoreBtn('sales','salesMoreWrap',filtered.length);
+}
+
+// ===== PURCHASE ===== (nayi entry sabse upar dikhti hai)
+function populatePurchase(resetPage){
+  if(resetPage) pageState.purchase = PAGE_STEP;
+  const rows = (allData.purchase||[]).slice(1);
+  const q = (document.getElementById('purchaseSearch')?.value||'').toLowerCase();
+  let filtered = q ? rows.filter(r=>(String(r[2]||'')+String(r[3]||'')).toLowerCase().includes(q)) : rows.slice();
+  filtered = filtered.filter(r=>inRange(r[0], rangeState.purchase));
+  filtered.sort((a,b)=>parseIndianDate(b[0])-parseIndianDate(a[0]));
+  document.getElementById('purchaseCount').textContent = filtered.length;
+
+  setRows('#purchaseTable tbody', filtered.slice(0,pageState.purchase).map(r=>`
+    <tr>
+      <td>${formatDateDisplay(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td>
+      <td>${esc(r[3])}</td><td>${esc(r[4])}</td>
+      <td class="amt-cell">${fmt(r[6])}</td><td class="amt-cell">${fmt(r[7])}</td>
+    </tr>`));
+  renderMoreBtn('purchase','purchaseMoreWrap',filtered.length);
+}
+
+// ===== PAYMENTS ===== (nayi entry sabse upar dikhti hai)
+function populatePayments(resetPage){
+  if(resetPage) pageState.payments = PAGE_STEP;
+  const receipts = (allData.receipts||[]).slice(1);
+  const payments = (allData.payments||[]).slice(1);
+  const q = (document.getElementById('paymentsSearch')?.value||'').toLowerCase();
+  let all = [...receipts,...payments];
+  if(q) all = all.filter(r=>String(r[2]||'').toLowerCase().includes(q));
+  all = all.filter(r=>inRange(r[0], rangeState.payments));
+  all.sort((a,b)=>parseIndianDate(b[0])-parseIndianDate(a[0]));
+  document.getElementById('paymentsCount').textContent = all.length;
+
+  setRows('#paymentsTable tbody', all.slice(0,pageState.payments).map(r=>`
+    <tr>
+      <td>${formatDateDisplay(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td>
+      <td class="amt-cell">${fmt(r[3]||0)}</td><td class="amt-cell">${fmt(r[4]||0)}</td>
+      <td>${esc(r[5]||'')}</td>
+    </tr>`));
+  renderMoreBtn('payments','paymentsMoreWrap',all.length);
+}
+
+// ===== LEDGER =====
+let currentLedgerParty = null, currentLedgerBalance = 0;
+
+// Har row ke liye asli detail banata hai — party naam repeat karne ke bajaye
+// item/qty (sale, purchase) ya narration (receipt, payment) dikhata hai.
+function particularsFor(r, kind){
+  if(kind==='sale' || kind==='purchase'){
+    const item = r[3]||'', qty=r[4]||'', unit=r[5]||'';
+    return item + (qty ? ` × ${qty}${unit?' '+unit:''}` : '');
+  }
+  return r[5] || (kind==='receipt' ? 'Payment Received' : 'Payment Made');
+}
+const LEDGER_TYPE = {
+  sale:     {tag:'sale',    label:'Sale'},
+  purchase: {tag:'purchase',label:'Purchase'},
+  receipt:  {tag:'recv',    label:'Receipt'},
+  payment:  {tag:'pay',     label:'Payment'}
+};
+
+function showLedger(){
+  const partyName = document.getElementById('partySelect').value;
+  const shareBtn = document.getElementById('shareLedgerBtn');
+  if(!partyName){
+    setRows('#ledgerTable tbody', []);
+    document.getElementById('ledgerSummaryWrap').innerHTML = '';
+    shareBtn.style.display = 'none';
+    return;
+  }
+  currentLedgerParty = partyName;
+
+  const sales = allData.sales.slice(1);
+  const purchase = allData.purchase.slice(1);
+  const receipts = allData.receipts.slice(1);
+  const payments = allData.payments.slice(1);
+
+  const trans = [
+    ...sales.filter(r=>r[2]===partyName).map(r=>({date:r[0],bill:r[1],kind:'sale',particulars:particularsFor(r,'sale'),debit:parseFloat(r[7])||0,credit:0})),
+    ...purchase.filter(r=>r[2]===partyName).map(r=>({date:r[0],bill:r[1],kind:'purchase',particulars:particularsFor(r,'purchase'),debit:0,credit:parseFloat(r[7])||0})),
+    ...receipts.filter(r=>r[2]===partyName).map(r=>({date:r[0],bill:r[1],kind:'receipt',particulars:particularsFor(r,'receipt'),debit:parseFloat(r[3])||0,credit:parseFloat(r[4])||0})),
+    ...payments.filter(r=>r[2]===partyName).map(r=>({date:r[0],bill:r[1],kind:'payment',particulars:particularsFor(r,'payment'),debit:parseFloat(r[3])||0,credit:parseFloat(r[4])||0}))
+  ].sort((a,b)=>parseIndianDate(a.date)-parseIndianDate(b.date));
+
+  // Opening balance (Masters column D) — hamesha sabse pehli row, date-sort se bahar
+  const masterRow = (allData.masters||[]).slice(1).find(r=>r[1]===partyName);
+  const openingAmt = masterRow ? parseFloat(masterRow[3])||0 : 0;
+  const openingDebit = openingAmt && !isCreditorType(masterRow[2]) ? openingAmt : 0;
+  const openingCredit = openingAmt && isCreditorType(masterRow[2]) ? openingAmt : 0;
+
+  // Running balance hamesha chronological (purane se naye) order me hi sahi nikalta hai,
+  // isliye pehle forward calculate karte hain — display ke liye baad me reverse kar dete hain
+  // taaki sabse nayi entry upar dikhe. Opening Balance sabse purani entry hai, isliye woh
+  // reverse ke baad table ke sabse niche pinned rehti hai.
+  let balance = openingDebit - openingCredit, totalDebit = openingDebit, totalCredit = openingCredit;
+  const transRowsHtml = [];
+  trans.forEach(t=>{
+    balance += t.debit - t.credit;
+    totalDebit += t.debit; totalCredit += t.credit;
+    const meta = LEDGER_TYPE[t.kind];
+    const balColor = balance>0 ? 'var(--debit)' : balance<0 ? 'var(--credit)' : 'var(--ink-soft)';
+    transRowsHtml.push(`<tr>
+      <td>${formatDateDisplay(t.date)}</td><td>${esc(t.bill)}</td>
+      <td><span class="tag ${meta.tag}">${meta.label}</span> ${esc(t.particulars)}</td>
+      <td class="amt-cell" style="color:var(--debit)">${t.debit?fmt(t.debit):''}</td>
+      <td class="amt-cell" style="color:var(--credit)">${t.credit?fmt(t.credit):''}</td>
+      <td class="amt-cell" style="color:${balColor}">${fmt(Math.abs(balance))}</td>
+    </tr>`);
+  });
+  const rowsHtml = transRowsHtml.reverse(); // nayi entry sabse upar
+  if(openingAmt){
+    const balColor0 = (openingDebit-openingCredit)>0 ? 'var(--debit)' : (openingDebit-openingCredit)<0 ? 'var(--credit)' : 'var(--ink-soft)';
+    rowsHtml.push(`<tr class="opening-row" style="background:rgba(201,154,46,0.10);">
+      <td>-</td><td>-</td>
+      <td><span class="tag" style="background:var(--gold-soft);color:var(--cover-dark);">Opening</span> Opening Balance</td>
+      <td class="amt-cell" style="color:var(--debit)">${openingDebit?fmt(openingDebit):''}</td>
+      <td class="amt-cell" style="color:var(--credit)">${openingCredit?fmt(openingCredit):''}</td>
+      <td class="amt-cell" style="color:${balColor0}">${fmt(Math.abs(openingDebit-openingCredit))}</td>
+    </tr>`);
+  }
+  setRows('#ledgerTable tbody', rowsHtml);
+  currentLedgerBalance = balance;
+
+  const balDir = balance>0 ? 'आपको लेना है' : balance<0 ? 'आपको देना है' : 'क्लियर ✅';
+  const balColor = balance>0 ? 'var(--debit)' : balance<0 ? 'var(--credit)' : 'var(--ink-soft)';
+  document.getElementById('ledgerSummaryWrap').innerHTML = `
+    <div class="ledger-summary">
+      <div class="pill"><div class="k">कुल Debit</div><div class="v" style="color:var(--debit)">${fmt(totalDebit)}</div></div>
+      <div class="pill"><div class="k">कुल Credit</div><div class="v" style="color:var(--credit)">${fmt(totalCredit)}</div></div>
+      <div class="pill"><div class="k">${balDir}</div><div class="v" style="color:${balColor}">${fmt(Math.abs(balance))}</div></div>
+    </div>`;
+
+  shareBtn.style.display = (trans.length || openingAmt) ? 'flex' : 'none';
+}
+
+function shareLedger(){
+  if(!currentLedgerParty) return;
+  const dir = currentLedgerBalance>0 ? 'देना बाकी (आपको देना है)' : currentLedgerBalance<0 ? 'जमा (advance)' : 'क्लियर';
+  const text = `*GS Pashukhadya*\nParty: ${currentLedgerParty}\nBalance: ₹${Math.abs(currentLedgerBalance).toLocaleString('en-IN')}\nStatus: ${dir}\n\n- Khan Baba`;
+  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+}
+
+// ===== PWA: install prompt + service worker =====
+let deferredInstallPrompt = null;
+window.addEventListener('beforeinstallprompt', (e)=>{
+  e.preventDefault();
+  deferredInstallPrompt = e;
+  if(!localStorage.getItem('gsPashukhadyaInstallDismissed')){
+    document.getElementById('installBanner').classList.add('show');
+  }
+});
+document.getElementById('installGoBtn').addEventListener('click', async ()=>{
+  document.getElementById('installBanner').classList.remove('show');
+  if(!deferredInstallPrompt) return;
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+  deferredInstallPrompt = null;
+});
+document.getElementById('installCloseBtn').addEventListener('click', ()=>{
+  document.getElementById('installBanner').classList.remove('show');
+  localStorage.setItem('gsPashukhadyaInstallDismissed','1');
+});
+window.addEventListener('appinstalled', ()=>{
+  document.getElementById('installBanner').classList.remove('show');
+});
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(err=>console.error('SW register failed:', err));
+  });
+}
+
+// ===== INIT =====
+loadData(false);
+</script>
+</body>
+</html>
