@@ -17,22 +17,26 @@
 <meta name="apple-mobile-web-app-title" content="GS Pashukhadya">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700;9..144,800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#F5EFDD;
-  --paper-line:rgba(107,35,51,0.08);
-  --surface:#FFFDF7;
-  --cover:#6B2333;
-  --cover-dark:#4A1722;
-  --gold:#C99A2E;
-  --gold-soft:#F1DFAE;
-  --ink:#2A2018;
-  --ink-soft:#7A6C5A;
-  --credit:#3F7D53;
-  --debit:#B8433A;
-  --shadow:0 4px 18px rgba(74,23,34,0.10);
-  --radius:14px;
+  --paper:#EFF5F1;
+  --paper-line:rgba(20,92,67,0.05);
+  --surface:#FFFFFF;
+  --cover:#0F5C46;
+  --cover-dark:#0A3D2F;
+  --teal:#0E7C86;
+  --teal-dark:#0A5960;
+  --gold:#E8A33D;
+  --gold-soft:#FCEACB;
+  --rose:#E0533D;
+  --rose-soft:#FBDCD4;
+  --ink:#16241C;
+  --ink-soft:#5C6F63;
+  --credit:#2E9E6D;
+  --debit:#E0533D;
+  --shadow:0 8px 22px rgba(10,61,47,0.12);
+  --radius:16px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{-webkit-text-size-adjust:100%;}
@@ -41,9 +45,11 @@ body{
   background:var(--paper);
   color:var(--ink);
   padding-bottom:78px;
-  background-image:repeating-linear-gradient(var(--paper) 0px, var(--paper) 27px, var(--paper-line) 28px);
+  background-image:radial-gradient(circle at 100% 0%, rgba(14,124,134,0.07), transparent 40%),
+                    radial-gradient(circle at 0% 30%, rgba(232,163,61,0.06), transparent 35%);
+  background-attachment:fixed;
 }
-h1,h2,h3,.brand,.big-number{font-family:'Fraunces',serif;}
+h1,h2,h3,.brand,.big-number{font-family:'Sora',sans-serif;}
 
 /* ===== HEADER ===== */
 .topbar{
@@ -58,7 +64,7 @@ h1,h2,h3,.brand,.big-number{font-family:'Fraunces',serif;}
   width:46px;height:46px;border-radius:50%;
   border:2px solid var(--gold);
   display:flex;align-items:center;justify-content:center;
-  font-family:'Fraunces',serif;font-weight:700;font-size:15px;
+  font-family:'Sora',sans-serif;font-weight:700;font-size:15px;
   color:var(--gold);flex-shrink:0;
   background:radial-gradient(circle at 35% 30%, rgba(201,154,46,0.18), transparent 70%);
 }
@@ -97,13 +103,53 @@ h1,h2,h3,.brand,.big-number{font-family:'Fraunces',serif;}
 .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
 .stat-card{
   background:linear-gradient(160deg,var(--cover) 0%, var(--cover-dark) 100%);
-  color:#F4E6C8;border-radius:var(--radius);padding:14px 14px 12px;
+  color:#EAF6EF;border-radius:var(--radius);padding:14px 14px 12px;
   box-shadow:var(--shadow);position:relative;overflow:hidden;
 }
-.stat-card.gold{background:linear-gradient(160deg,#C99A2E 0%, #9C7620 100%);color:#3A2A08;}
-.stat-card .label{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;opacity:0.85;font-weight:600;}
+.stats-grid .stat-card:nth-child(4n+2){background:linear-gradient(160deg,var(--teal) 0%, var(--teal-dark) 100%);color:#E7F7F8;}
+.stats-grid .stat-card:nth-child(4n+3){background:linear-gradient(160deg,#3C7A50 0%, #285A3A 100%);color:#EAF6EF;}
+.stats-grid .stat-card:nth-child(4n+4){background:linear-gradient(160deg,#B4832A 0%, #8A6220 100%);color:#FCF3DE;}
+.stats-grid .stat-card.gold{background:linear-gradient(160deg,var(--rose) 0%, #A83A28 100%);color:#FDEAE6;}
+.stats-grid .stat-card.credit-tile{background:linear-gradient(160deg,var(--credit) 0%, #1F6B4A 100%);color:#EAF9F0;}
+.stat-card .label{font-size:11px;text-transform:uppercase;letter-spacing:0.6px;opacity:0.9;font-weight:700;}
 .stat-card .big-number{font-size:22px;font-weight:700;margin-top:6px;font-variant-numeric:tabular-nums;}
-.stat-card .seal-mark{position:absolute;right:-8px;bottom:-14px;font-size:56px;opacity:0.10;font-family:'Fraunces';}
+.stat-card .seal-mark{position:absolute;right:-8px;bottom:-14px;font-size:56px;opacity:0.12;font-family:'Sora';}
+
+/* ===== TOP SELLING ITEM ===== */
+.highlight-item-card{background:linear-gradient(160deg,var(--cover) 0%, var(--teal-dark) 100%);border-left:none;color:#EAF6EF;}
+.highlight-item-card .section-title{color:#EAF6EF;}
+.top-item-row{display:flex;align-items:center;gap:14px;}
+.top-item-row .medal{
+  width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.14);
+  display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;
+}
+.top-item-row .info{flex:1;min-width:0;}
+.top-item-row .name{font-family:'Sora';font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.top-item-row .meta{font-size:12px;opacity:0.85;margin-top:3px;}
+.top-item-row .revenue{text-align:right;flex-shrink:0;}
+.top-item-row .revenue .v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;}
+.top-item-row .revenue .k{font-size:10px;opacity:0.8;text-transform:uppercase;}
+
+/* ===== MONTH SUMMARY ROW ===== */
+.month-stat-row{display:flex;gap:10px;}
+.month-stat-row .m-pill{flex:1;background:var(--paper);border-radius:12px;padding:12px 10px;text-align:center;}
+.month-stat-row .m-pill .k{font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;font-weight:700;letter-spacing:0.3px;}
+.month-stat-row .m-pill .v{font-size:15.5px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums;}
+.month-stat-row .m-pill.buy .v{color:var(--debit);}
+.month-stat-row .m-pill.sell .v{color:var(--teal-dark);}
+.month-stat-row .m-pill.profit .v.pos{color:var(--credit);}
+.month-stat-row .m-pill.profit .v.neg{color:var(--debit);}
+.hero-card{
+  background:linear-gradient(135deg,var(--cover) 0%, var(--teal-dark) 100%);
+  color:#EAF6EF;border-radius:var(--radius);padding:18px 18px 16px;margin-bottom:14px;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+}
+.hero-card::after{content:'';position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,0.06);}
+.hero-card .greet{font-family:'Sora';font-size:17px;font-weight:700;}
+.hero-card .date{font-size:11.5px;opacity:0.75;margin-top:2px;}
+.hero-card .hero-row{display:flex;gap:18px;margin-top:14px;}
+.hero-card .hero-stat .k{font-size:10.5px;text-transform:uppercase;letter-spacing:0.4px;opacity:0.75;font-weight:600;}
+.hero-card .hero-stat .v{font-size:19px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums;}
 
 /* ===== SEARCH ===== */
 .search-box{position:relative;margin-bottom:12px;}
@@ -124,7 +170,7 @@ h1,h2,h3,.brand,.big-number{font-family:'Fraunces',serif;}
 .avatar{
   width:36px;height:36px;border-radius:50%;background:var(--gold-soft);color:var(--cover-dark);
   display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;
-  font-family:'Fraunces';
+  font-family:'Sora';
 }
 .list-row .main{flex:1;min-width:0;}
 .list-row .title{font-weight:600;font-size:14.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
@@ -176,6 +222,19 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
 }
 .chip.active{background:var(--cover);color:#F4E6C8;border-color:var(--cover);}
 .chip-row-label{font-size:11px;color:var(--ink-soft);font-weight:600;margin:2px 2px 6px;text-transform:uppercase;letter-spacing:0.4px;}
+
+/* ===== CUSTOM DATE RANGE ===== */
+.custom-range-row{display:none;align-items:center;gap:8px;background:var(--surface);border:1px solid rgba(107,35,51,0.15);border-radius:12px;padding:10px;margin:-4px 0 12px;flex-wrap:wrap;}
+.custom-range-row.show{display:flex;}
+.custom-range-row input[type="date"]{
+  flex:1;min-width:118px;border:1px solid rgba(107,35,51,0.2);border-radius:8px;padding:7px 8px;
+  font-family:'Inter';font-size:12.5px;color:var(--ink);background:var(--paper);
+}
+.custom-range-row .to-label{font-size:11px;color:var(--ink-soft);font-weight:600;}
+.custom-range-row .apply-btn{
+  flex-shrink:0;background:var(--cover);color:#F4E6C8;border:none;border-radius:8px;
+  padding:8px 14px;font-family:'Inter';font-weight:700;font-size:12.5px;cursor:pointer;
+}
 
 /* ===== LOAD MORE ===== */
 .loadmore-wrap{text-align:center;margin-top:12px;}
@@ -250,18 +309,29 @@ tr.opening-row td{border-top:2px solid var(--gold);}
 
   <!-- DASHBOARD -->
   <div id="dashboard" class="section active">
-    <div class="stats-grid">
-      <div class="stat-card"><div class="label">कुल Parties</div><div class="big-number" id="totalParties">0</div><div class="seal-mark">◆</div></div>
-      <div class="stat-card"><div class="label">स्टॉक आइटम</div><div class="big-number" id="totalStockItems">0</div><div class="seal-mark">◆</div></div>
-      <div class="stat-card"><div class="label">कुल Purchase</div><div class="big-number" id="totalPurchase">₹0</div><div class="seal-mark">◆</div></div>
-      <div class="stat-card" id="lowStockCard"><div class="label">कम/नेगेटिव स्टॉक</div><div class="big-number" id="lowStockCount">0</div><div class="seal-mark">◆</div></div>
-      <div class="stat-card gold"><div class="label">Outstanding (देना बाकी)</div><div class="big-number" id="totalOutstanding">₹0</div><div class="seal-mark">◆</div></div>
-      <div class="stat-card"><div class="label">कुल Payments</div><div class="big-number" id="totalPayments">₹0</div><div class="seal-mark">◆</div></div>
+    <div class="hero-card">
+      <div class="greet">नमस्ते, Khan Baba 👋</div>
+      <div class="date" id="heroDate"></div>
+      <div class="hero-row">
+        <div class="hero-stat"><div class="k">Parties</div><div class="v" id="heroParties">0</div></div>
+        <div class="hero-stat"><div class="k">Outstanding</div><div class="v" id="heroOutstanding">₹0</div></div>
+        <div class="hero-stat"><div class="k">Stock Items</div><div class="v" id="heroStock">0</div></div>
+      </div>
+    </div>
+
+    <div class="card highlight-item-card">
+      <div class="section-title">🏆 सबसे ज़्यादा बिकने वाला आइटम</div>
+      <div id="topSellingItem"></div>
     </div>
 
     <div class="card">
-      <div class="section-title">🔴 Top Outstanding Parties</div>
-      <div id="topDebtors"></div>
+      <div class="section-title" id="lastMonthTitle">पिछला महीना</div>
+      <div class="month-stat-row" id="lastMonthStats"></div>
+    </div>
+
+    <div class="card">
+      <div class="section-title" id="thisMonthTitle">यह महीना</div>
+      <div class="month-stat-row" id="thisMonthStats"></div>
     </div>
 
     <div class="card">
@@ -283,6 +353,13 @@ tr.opening-row td{border-top:2px solid var(--gold);}
         <button class="chip" data-range="today" onclick="setRange('dashboard','today',this)">आज</button>
         <button class="chip" data-range="week" onclick="setRange('dashboard','week',this)">यह हफ्ता</button>
         <button class="chip" data-range="month" onclick="setRange('dashboard','month',this)">यह महीना</button>
+        <button class="chip" data-range="custom" onclick="setRange('dashboard','custom',this)">📅 Custom</button>
+      </div>
+      <div class="custom-range-row" id="dashboardCustomRange">
+        <input type="date" id="dashboardFrom">
+        <span class="to-label">to</span>
+        <input type="date" id="dashboardTo">
+        <button class="apply-btn" onclick="applyCustomRange('dashboard')">Apply</button>
       </div>
       <div id="recentActivity"></div>
     </div>
@@ -297,8 +374,8 @@ tr.opening-row td{border-top:2px solid var(--gold);}
     </div>
     <div class="filter-chips" id="partiesFilterChips">
       <button class="chip active" data-f="all" onclick="setPartyFilter('all',this)">सब</button>
-      <button class="chip" data-f="debtor" onclick="setPartyFilter('debtor',this)">🔴 लेना है</button>
-      <button class="chip" data-f="creditor" onclick="setPartyFilter('creditor',this)">🟢 देना है</button>
+      <button class="chip" data-f="debtor" onclick="setPartyFilter('debtor',this)">🟢 लेना है</button>
+      <button class="chip" data-f="creditor" onclick="setPartyFilter('creditor',this)">🔴 देना है</button>
       <button class="chip" data-f="clear" onclick="setPartyFilter('clear',this)">✅ क्लियर</button>
     </div>
     <div class="card" style="padding-left:14px;border-left:none;" id="partiesList"></div>
@@ -319,6 +396,13 @@ tr.opening-row td{border-top:2px solid var(--gold);}
       <button class="chip" data-range="today" onclick="setRange('sales','today',this)">आज</button>
       <button class="chip" data-range="week" onclick="setRange('sales','week',this)">यह हफ्ता</button>
       <button class="chip" data-range="month" onclick="setRange('sales','month',this)">यह महीना</button>
+      <button class="chip" data-range="custom" onclick="setRange('sales','custom',this)">📅 Custom</button>
+    </div>
+    <div class="custom-range-row" id="salesCustomRange">
+      <input type="date" id="salesFrom">
+      <span class="to-label">to</span>
+      <input type="date" id="salesTo">
+      <button class="apply-btn" onclick="applyCustomRange('sales')">Apply</button>
     </div>
     <div class="card table-wrap" style="border-left:none;padding:0;">
       <table id="salesTable">
@@ -343,6 +427,13 @@ tr.opening-row td{border-top:2px solid var(--gold);}
       <button class="chip" data-range="today" onclick="setRange('purchase','today',this)">आज</button>
       <button class="chip" data-range="week" onclick="setRange('purchase','week',this)">यह हफ्ता</button>
       <button class="chip" data-range="month" onclick="setRange('purchase','month',this)">यह महीना</button>
+      <button class="chip" data-range="custom" onclick="setRange('purchase','custom',this)">📅 Custom</button>
+    </div>
+    <div class="custom-range-row" id="purchaseCustomRange">
+      <input type="date" id="purchaseFrom">
+      <span class="to-label">to</span>
+      <input type="date" id="purchaseTo">
+      <button class="apply-btn" onclick="applyCustomRange('purchase')">Apply</button>
     </div>
     <div class="card table-wrap" style="border-left:none;padding:0;">
       <table id="purchaseTable">
@@ -362,6 +453,19 @@ tr.opening-row td{border-top:2px solid var(--gold);}
       <select id="partySelect" onchange="showLedger()">
         <option>Choose Party...</option>
       </select>
+    </div>
+    <div class="filter-chips" id="ledgerRangeChips">
+      <button class="chip active" data-range="all" onclick="setRange('ledger','all',this)">सब</button>
+      <button class="chip" data-range="today" onclick="setRange('ledger','today',this)">आज</button>
+      <button class="chip" data-range="week" onclick="setRange('ledger','week',this)">यह हफ्ता</button>
+      <button class="chip" data-range="month" onclick="setRange('ledger','month',this)">यह महीना</button>
+      <button class="chip" data-range="custom" onclick="setRange('ledger','custom',this)">📅 Custom</button>
+    </div>
+    <div class="custom-range-row" id="ledgerCustomRange">
+      <input type="date" id="ledgerFrom">
+      <span class="to-label">to</span>
+      <input type="date" id="ledgerTo">
+      <button class="apply-btn" onclick="applyCustomRange('ledger')">Apply</button>
     </div>
     <div id="ledgerSummaryWrap"></div>
     <button class="share-btn" id="shareLedgerBtn" onclick="shareLedger()" style="display:none;">
@@ -388,6 +492,13 @@ tr.opening-row td{border-top:2px solid var(--gold);}
       <button class="chip" data-range="today" onclick="setRange('payments','today',this)">आज</button>
       <button class="chip" data-range="week" onclick="setRange('payments','week',this)">यह हफ्ता</button>
       <button class="chip" data-range="month" onclick="setRange('payments','month',this)">यह महीना</button>
+      <button class="chip" data-range="custom" onclick="setRange('payments','custom',this)">📅 Custom</button>
+    </div>
+    <div class="custom-range-row" id="paymentsCustomRange">
+      <input type="date" id="paymentsFrom">
+      <span class="to-label">to</span>
+      <input type="date" id="paymentsTo">
+      <button class="apply-btn" onclick="applyCustomRange('payments')">Apply</button>
     </div>
     <div class="card table-wrap" style="border-left:none;padding:0;">
       <table id="paymentsTable">
@@ -487,15 +598,26 @@ function initials(name){
 // (a) date-range chips se list chhoti ho jaati hai, (b) "Aur Dikhao" se page-by-page load hota hai.
 const PAGE_STEP = 25;
 let pageState = { sales: PAGE_STEP, purchase: PAGE_STEP, payments: PAGE_STEP, parties: PAGE_STEP, stock: 50 };
-let rangeState = { dashboard: 'all', sales: 'all', purchase: 'all', payments: 'all' };
+let rangeState = { dashboard: 'all', sales: 'all', purchase: 'all', payments: 'all', ledger: 'all' };
+let customRangeState = { dashboard:{from:null,to:null}, sales:{from:null,to:null}, purchase:{from:null,to:null}, payments:{from:null,to:null}, ledger:{from:null,to:null} };
 let partyFilterState = 'all';
 
-function inRange(dateStr, range){
+const SECTION_RENDER = {dashboard:updateDashboard, sales:populateSales, purchase:populatePurchase, payments:populatePayments, ledger:showLedger};
+
+function inRange(dateStr, section){
+  const range = rangeState[section];
   if(range==='all' || !range) return true;
   const d = parseAnyDate(dateStr);
   if(isNaN(d.getTime())) return true;
-  const now = new Date(); now.setHours(0,0,0,0);
   const dd = new Date(d); dd.setHours(0,0,0,0);
+  if(range==='custom'){
+    const cr = customRangeState[section] || {};
+    if(!cr.from && !cr.to) return true;
+    if(cr.from && dd < cr.from) return false;
+    if(cr.to && dd > cr.to) return false;
+    return true;
+  }
+  const now = new Date(); now.setHours(0,0,0,0);
   if(range==='today') return dd.getTime()===now.getTime();
   if(range==='week'){ const from = new Date(now); from.setDate(from.getDate()-6); return dd>=from && dd<=now; }
   if(range==='month'){ const from = new Date(now); from.setDate(from.getDate()-29); return dd>=from && dd<=now; }
@@ -506,7 +628,30 @@ function setRange(section, range, btn){
   btn.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
   pageState[section] = PAGE_STEP;
-  ({dashboard:updateDashboard, sales:populateSales, purchase:populatePurchase, payments:populatePayments})[section]();
+
+  const customRow = document.getElementById(section+'CustomRange');
+  if(range==='custom'){
+    if(customRow) customRow.classList.add('show');
+    // agar pehle se koi custom dates chuni hui hain to turant apply karo, warna user ke "Apply" ka wait karo
+    const cr = customRangeState[section];
+    if(cr && (cr.from || cr.to)) SECTION_RENDER[section]();
+  } else {
+    if(customRow) customRow.classList.remove('show');
+    SECTION_RENDER[section]();
+  }
+}
+function applyCustomRange(section){
+  const fromVal = document.getElementById(section+'From').value;
+  const toVal = document.getElementById(section+'To').value;
+  if(!fromVal && !toVal){
+    alert('Kam se kam ek date chuno');
+    return;
+  }
+  const from = fromVal ? new Date(fromVal+'T00:00:00') : null;
+  const to = toVal ? new Date(toVal+'T00:00:00') : null;
+  customRangeState[section] = { from, to };
+  pageState[section] = PAGE_STEP;
+  SECTION_RENDER[section]();
 }
 function setPartyFilter(f, btn){
   partyFilterState = f;
@@ -662,42 +807,74 @@ function updateDashboard(){
   const receipts = allData.receipts.slice(1);
   const payments = allData.payments.slice(1);
 
-  const totalSales = sales.reduce((s,r)=>s+(parseFloat(r[7])||0),0);
-  const totalPurchase = purchase.reduce((s,r)=>s+(parseFloat(r[7])||0),0);
-  const totalReceipts = receipts.reduce((s,r)=>s+(parseFloat(r[4])||0),0);
-  const totalPaymentsOut = payments.reduce((s,r)=>s+(parseFloat(r[3])||0),0);
-
   let outstanding = 0;
-  const debtors = [];
   Object.keys(balancesMap).forEach(name=>{
     const b = balancesMap[name].debit - balancesMap[name].credit;
-    if(b>0){ outstanding += b; debtors.push({name, balance:b}); }
+    if(b>0) outstanding += b;
   });
-  debtors.sort((a,b)=>b.balance-a.balance);
-
   const stockItems = Object.keys(stockMap);
-  const lowStock = stockItems.filter(name => (stockMap[name].opening + stockMap[name].purchased - stockMap[name].sold) <= 0).length;
 
-  document.getElementById('totalParties').textContent = masters.slice(1).filter(r=>r[1]).length;
-  document.getElementById('totalStockItems').textContent = stockItems.length;
-  document.getElementById('totalPurchase').textContent = fmt(totalPurchase);
-  document.getElementById('lowStockCount').textContent = lowStock;
-  document.getElementById('lowStockCard').classList.toggle('gold', lowStock>0);
-  document.getElementById('totalOutstanding').textContent = fmt(outstanding);
-  document.getElementById('totalPayments').textContent = fmt(totalPaymentsOut);
+  // hero card
+  document.getElementById('heroDate').textContent = new Date().toLocaleDateString('hi-IN',{weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  document.getElementById('heroParties').textContent = masters.slice(1).filter(r=>r[1]).length;
+  document.getElementById('heroOutstanding').textContent = fmt(outstanding);
+  document.getElementById('heroStock').textContent = stockItems.length;
 
-  // top debtors
-  const top = debtors.slice(0,5);
-  if(top.length===0){
-    document.getElementById('topDebtors').innerHTML = '<div class="empty" style="padding:16px;"><p>Koi outstanding nahi hai 🎉</p></div>';
+  // ===== Sabse jyada bikne wala item (qty ke hisaab se) =====
+  const itemQty = {}, itemRevenue = {};
+  sales.forEach(r=>{
+    const item = String(r[3]||'').trim();
+    if(!item) return;
+    itemQty[item] = (itemQty[item]||0) + (parseFloat(r[4])||0);
+    itemRevenue[item] = (itemRevenue[item]||0) + (parseFloat(r[7])||0);
+  });
+  const topItemName = Object.keys(itemQty).sort((a,b)=>itemQty[b]-itemQty[a])[0];
+  if(!topItemName){
+    document.getElementById('topSellingItem').innerHTML = '<div class="empty" style="padding:6px 0;color:#EAF6EF;"><p>Abhi koi sale entry nahi</p></div>';
   } else {
-    setRows('#topDebtors', top.map(d=>`
-      <div class="list-row" onclick="openPartyLedger('${esc(d.name).replace(/'/g,"\\'")}')">
-        <div class="avatar">${esc(initials(d.name))}</div>
-        <div class="main"><div class="title">${esc(d.name)}</div><div class="sub">देना बाकी</div></div>
-        <div class="amt" style="color:var(--debit)">${fmt(d.balance)}</div>
-      </div>`));
+    const unit = (stockMap[topItemName] && stockMap[topItemName].unit) || '';
+    document.getElementById('topSellingItem').innerHTML = `
+      <div class="top-item-row">
+        <div class="medal">🏆</div>
+        <div class="info">
+          <div class="name">${esc(topItemName)}</div>
+          <div class="meta">${itemQty[topItemName]} ${esc(unit)} बिके</div>
+        </div>
+        <div class="revenue">
+          <div class="v">${fmt(itemRevenue[topItemName])}</div>
+          <div class="k">Revenue</div>
+        </div>
+      </div>`;
   }
+
+  // ===== Month-wise Purchase / Sale / Profit (Profit = Sale - Purchase) =====
+  function monthStats(monthsAgo){
+    const now = new Date();
+    const target = new Date(now.getFullYear(), now.getMonth()-monthsAgo, 1);
+    const y = target.getFullYear(), m = target.getMonth();
+    const inMonth = (dateStr)=>{
+      const d = parseAnyDate(dateStr);
+      return !isNaN(d.getTime()) && d.getFullYear()===y && d.getMonth()===m;
+    };
+    const pur = purchase.filter(r=>inMonth(r[0])).reduce((s,r)=>s+(parseFloat(r[7])||0),0);
+    const sal = sales.filter(r=>inMonth(r[0])).reduce((s,r)=>s+(parseFloat(r[7])||0),0);
+    return {purchase:pur, sale:sal, profit: sal-pur, label: target.toLocaleDateString('hi-IN',{month:'long', year:'numeric'})};
+  }
+  const lastMonth = monthStats(1);
+  const thisMonth = monthStats(0);
+  document.getElementById('lastMonthTitle').textContent = '📅 पिछला महीना — ' + lastMonth.label;
+  document.getElementById('thisMonthTitle').textContent = '📆 यह महीना — ' + thisMonth.label;
+
+  function renderMonthPills(elId, stats){
+    const profitClass = stats.profit>=0 ? 'pos' : 'neg';
+    const profitLabel = stats.profit>=0 ? 'प्रॉफ़िट' : 'लॉस';
+    document.getElementById(elId).innerHTML = `
+      <div class="m-pill buy"><div class="k">Purchase</div><div class="v">${fmt(stats.purchase)}</div></div>
+      <div class="m-pill sell"><div class="k">Sale</div><div class="v">${fmt(stats.sale)}</div></div>
+      <div class="m-pill profit"><div class="k">${profitLabel}</div><div class="v ${profitClass}">${fmt(Math.abs(stats.profit))}</div></div>`;
+  }
+  renderMonthPills('lastMonthStats', lastMonth);
+  renderMonthPills('thisMonthStats', thisMonth);
 
   // recent activity — nayi entry sabse upar; date-filter chips ke hisaab se
   const actWindow = 200; // date-filter theek se kaam kare, isliye bade window se filter karte hain
@@ -706,7 +883,7 @@ function updateDashboard(){
     ...purchase.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[7], type:'purchase'})),
     ...receipts.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[4]||r[3], type:'recv'})),
     ...payments.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[3]||r[4], type:'pay'}))
-  ].filter(a=>inRange(a.date, rangeState.dashboard))
+  ].filter(a=>inRange(a.date, 'dashboard'))
    .sort((a,b)=>parseIndianDate(b.date)-parseIndianDate(a.date))
    .slice(0, rangeState.dashboard==='all' ? 8 : 25);
 
@@ -736,7 +913,7 @@ function populateStock(resetPage){
     opening: stockMap[name].opening, purchased: stockMap[name].purchased, sold: stockMap[name].sold
   }));
   if(q) items = items.filter(i=>i.name.toLowerCase().includes(q));
-  items.sort((a,b)=> a.balance - b.balance); // low/negative stock pehle dikhega
+  items.sort((a,b)=> b.balance - a.balance); // jyada stock upar, kam/negative neeche
 
   document.getElementById('stockCount').textContent = items.length;
 
@@ -791,7 +968,7 @@ function populateParties(resetPage){
           <div class="title">${esc(r[1])}</div>
           <div class="sub">${esc(r[2]||'-')}${opening?' · Opening '+fmt(opening):''}</div>
         </div>
-        <div class="amt" style="color:${balAmt>0?'var(--debit)':balAmt<0?'var(--credit)':'var(--ink-soft)'}">${fmt(Math.abs(balAmt))}</div>
+        <div class="amt" style="color:${balAmt>0?'var(--credit)':balAmt<0?'var(--debit)':'var(--ink-soft)'}">${fmt(Math.abs(balAmt))}</div>
       </div>`;
     }));
   }
@@ -810,7 +987,7 @@ function populateSales(resetPage){
   const rows = (allData.sales||[]).slice(1);
   const q = (document.getElementById('salesSearch')?.value||'').toLowerCase();
   let filtered = q ? rows.filter(r=>(String(r[2]||'')+String(r[3]||'')).toLowerCase().includes(q)) : rows.slice();
-  filtered = filtered.filter(r=>inRange(r[0], rangeState.sales));
+  filtered = filtered.filter(r=>inRange(r[0], 'sales'));
   filtered.sort((a,b)=>parseIndianDate(b[0])-parseIndianDate(a[0]));
   document.getElementById('salesCount').textContent = filtered.length;
 
@@ -829,7 +1006,7 @@ function populatePurchase(resetPage){
   const rows = (allData.purchase||[]).slice(1);
   const q = (document.getElementById('purchaseSearch')?.value||'').toLowerCase();
   let filtered = q ? rows.filter(r=>(String(r[2]||'')+String(r[3]||'')).toLowerCase().includes(q)) : rows.slice();
-  filtered = filtered.filter(r=>inRange(r[0], rangeState.purchase));
+  filtered = filtered.filter(r=>inRange(r[0], 'purchase'));
   filtered.sort((a,b)=>parseIndianDate(b[0])-parseIndianDate(a[0]));
   document.getElementById('purchaseCount').textContent = filtered.length;
 
@@ -850,7 +1027,7 @@ function populatePayments(resetPage){
   const q = (document.getElementById('paymentsSearch')?.value||'').toLowerCase();
   let all = [...receipts,...payments];
   if(q) all = all.filter(r=>String(r[2]||'').toLowerCase().includes(q));
-  all = all.filter(r=>inRange(r[0], rangeState.payments));
+  all = all.filter(r=>inRange(r[0], 'payments'));
   all.sort((a,b)=>parseIndianDate(b[0])-parseIndianDate(a[0]));
   document.getElementById('paymentsCount').textContent = all.length;
 
@@ -915,13 +1092,16 @@ function showLedger(){
   // isliye pehle forward calculate karte hain — display ke liye baad me reverse kar dete hain
   // taaki sabse nayi entry upar dikhe. Opening Balance sabse purani entry hai, isliye woh
   // reverse ke baad table ke sabse niche pinned rehti hai.
+  // Balance hamesha PURI history se chalti hai (opening se lekar aaj tak), taaki running
+  // balance sahi rahe — date-range filter sirf ye tय karta hai ki kaunsi rows dikhani hai.
   let balance = openingDebit - openingCredit, totalDebit = openingDebit, totalCredit = openingCredit;
   const transRowsHtml = [];
   trans.forEach(t=>{
     balance += t.debit - t.credit;
+    if(!inRange(t.date, 'ledger')) return; // balance carry hui, bas row display nahi hogi
     totalDebit += t.debit; totalCredit += t.credit;
     const meta = LEDGER_TYPE[t.kind];
-    const balColor = balance>0 ? 'var(--debit)' : balance<0 ? 'var(--credit)' : 'var(--ink-soft)';
+    const balColor = balance>0 ? 'var(--credit)' : balance<0 ? 'var(--debit)' : 'var(--ink-soft)';
     transRowsHtml.push(`<tr>
       <td>${formatDateDisplay(t.date)}</td><td>${esc(t.bill)}</td>
       <td><span class="tag ${meta.tag}">${meta.label}</span> ${esc(t.particulars)}</td>
@@ -932,7 +1112,7 @@ function showLedger(){
   });
   const rowsHtml = transRowsHtml.reverse(); // nayi entry sabse upar
   if(openingAmt){
-    const balColor0 = (openingDebit-openingCredit)>0 ? 'var(--debit)' : (openingDebit-openingCredit)<0 ? 'var(--credit)' : 'var(--ink-soft)';
+    const balColor0 = (openingDebit-openingCredit)>0 ? 'var(--credit)' : (openingDebit-openingCredit)<0 ? 'var(--debit)' : 'var(--ink-soft)';
     rowsHtml.push(`<tr class="opening-row" style="background:rgba(201,154,46,0.10);">
       <td>-</td><td>-</td>
       <td><span class="tag" style="background:var(--gold-soft);color:var(--cover-dark);">Opening</span> Opening Balance</td>
@@ -945,7 +1125,7 @@ function showLedger(){
   currentLedgerBalance = balance;
 
   const balDir = balance>0 ? 'आपको लेना है' : balance<0 ? 'आपको देना है' : 'क्लियर ✅';
-  const balColor = balance>0 ? 'var(--debit)' : balance<0 ? 'var(--credit)' : 'var(--ink-soft)';
+  const balColor = balance>0 ? 'var(--credit)' : balance<0 ? 'var(--debit)' : 'var(--ink-soft)';
   document.getElementById('ledgerSummaryWrap').innerHTML = `
     <div class="ledger-summary">
       <div class="pill"><div class="k">कुल Debit</div><div class="v" style="color:var(--debit)">${fmt(totalDebit)}</div></div>
@@ -958,7 +1138,7 @@ function showLedger(){
 
 function shareLedger(){
   if(!currentLedgerParty) return;
-  const dir = currentLedgerBalance>0 ? 'देना बाकी (आपको देना है)' : currentLedgerBalance<0 ? 'जमा (advance)' : 'क्लियर';
+  const dir = currentLedgerBalance>0 ? 'लेना बाकी (आपको लेना है)' : currentLedgerBalance<0 ? 'देना बाकी (आपको देना है)' : 'क्लियर';
   const text = `*GS Pashukhadya*\nParty: ${currentLedgerParty}\nBalance: ₹${Math.abs(currentLedgerBalance).toLocaleString('en-IN')}\nStatus: ${dir}\n\n- Khan Baba`;
   window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
 }
