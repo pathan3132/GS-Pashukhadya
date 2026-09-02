@@ -131,12 +131,15 @@ h1,h2,h3,.brand,.big-number{font-family:'Sora',sans-serif;}
 .top-item-row .revenue .k{font-size:10px;opacity:0.8;text-transform:uppercase;}
 
 /* ===== MONTH SUMMARY ROW ===== */
-.month-stat-row{display:flex;gap:10px;}
-.month-stat-row .m-pill{flex:1;background:var(--paper);border-radius:12px;padding:12px 10px;text-align:center;}
+.month-stat-row{display:flex;flex-wrap:wrap;gap:10px;}
+.month-stat-row .m-pill{flex:1 1 calc(33.333% - 7px);min-width:90px;background:var(--paper);border-radius:12px;padding:12px 10px;text-align:center;}
 .month-stat-row .m-pill .k{font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;font-weight:700;letter-spacing:0.3px;}
 .month-stat-row .m-pill .v{font-size:15.5px;font-weight:700;margin-top:5px;font-variant-numeric:tabular-nums;}
 .month-stat-row .m-pill.buy .v{color:var(--debit);}
 .month-stat-row .m-pill.sell .v{color:var(--teal-dark);}
+.month-stat-row .m-pill.stock .v{color:var(--ink);}
+.month-stat-row .m-pill.lena .v{color:var(--credit);}
+.month-stat-row .m-pill.dena .v{color:var(--debit);}
 .month-stat-row .m-pill.profit .v.pos{color:var(--credit);}
 .month-stat-row .m-pill.profit .v.neg{color:var(--debit);}
 .hero-card{
@@ -720,11 +723,69 @@ function setSyncMeta(){
   document.getElementById('syncMeta').textContent = 'Last update: ' + new Date().toLocaleString('en-IN',{hour:'2-digit',minute:'2-digit',day:'2-digit',month:'short'});
 }
 
+// ===== SALE + PURCHASE COMBINED SHEET =====
+// Ab Sales aur Purchase ek hi sheet me hain, columns:
+// Date | Type | Vch/Bill No | Particulars | Item Details | Qty | Unit | Price | Amount
+// Type = "Sale" -> Sales me, Type = "Purchase" -> Purchase me jaata hai.
+// Har real entry ke neeche "DHOODWALE : naam" wali row us transaction ki
+// receiver info hoti hai, ALAG transaction nahi. "DHOODWALE : DIRECT" ka
+// matlab party khud maal le gayi (koi alag receiver nahi). Ye row kabhi
+// amount/stock/count/balance me nahi jodi jaati — sirf last real entry ke
+// "receiver" (col index 8) me chipka di jaati hai, party ka account wahi rehta hai.
+function processEntries(rawEntries){
+  const salesOut = [['Date','Vch/Bill No','Party','Item Details','Qty','Unit','Price','Amount','Receiver']];
+  const purchaseOut = [['Date','Vch/Bill No','Party','Item Details','Qty','Unit','Price','Amount','Receiver']];
+
+  let last = {date:'', type:'', vchno:'', particulars:''}; // continuation rows (blank cells) ke liye
+  let lastPushed = null; // sabse aakhri real Sale/Purchase row — DHOODWALE receiver isी pe chipkega
+
+  (rawEntries||[]).slice(1).forEach(row=>{
+    const rawParticulars = String(row[3]||'').trim();
+
+    // ===== DHOODWALE row: receiver info, transaction nahi =====
+    if(/^dhoodwale\s*:/i.test(rawParticulars)){
+      if(lastPushed){
+        const receiverName = rawParticulars.replace(/^dhoodwale\s*:/i,'').trim();
+        if(receiverName && !/^direct$/i.test(receiverName)){
+          lastPushed[8] = receiverName; // party wahi rahegi, sirf receiver naam show hoga
+        }
+      }
+      return; // count/amount/stock me kabhi shaamil nahi
+    }
+
+    // continuation rows me date/type/vchno/particulars blank ho sakte hain — forward-fill
+    const date = row[0] || last.date;
+    const type = String(row[1] || last.type || '').trim();
+    const vchno = row[2] || last.vchno;
+    const particulars = row[3] || last.particulars;
+    const item = row[4], qty = row[5], unit = row[6], price = row[7], amount = row[8];
+
+    // poori tarah blank spacer row — skip karo, state carry mat karo
+    if(!date && !type && !particulars && !item && !amount) return;
+
+    last = {date, type, vchno, particulars};
+
+    const outRow = [date, vchno, particulars, item, qty, unit, price, amount, ''];
+    if(/^sale/i.test(type)){
+      salesOut.push(outRow);
+      lastPushed = outRow;
+    } else if(/^purc/i.test(type)){ // sheet me "Purc" likha hota hai, poora "Purchase" nahi
+      purchaseOut.push(outRow);
+      lastPushed = outRow;
+    } else {
+      lastPushed = null; // anjaan Type — agar iske baad DHOODWALE aayi to kahin nahi chipkegi
+    }
+  });
+
+  return {sales: salesOut, purchase: purchaseOut};
+}
+
 function processData(raw){
+  const combined = processEntries(raw.entries || []);
   allData = {
     masters: raw.masters || [],
-    sales: [raw.sales && raw.sales[0] || [], ...forwardFill((raw.sales||[]).slice(1),[0,1,2])],
-    purchase: [raw.purchase && raw.purchase[0] || [], ...forwardFill((raw.purchase||[]).slice(1),[0,1,2])],
+    sales: combined.sales,
+    purchase: combined.purchase,
     receipts: [raw.receipts && raw.receipts[0] || [], ...forwardFill((raw.receipts||[]).slice(1),[0])],
     payments: [raw.payments && raw.payments[0] || [], ...forwardFill((raw.payments||[]).slice(1),[0])]
   };
@@ -739,7 +800,8 @@ function processData(raw){
 // Purchase = humne maal khareeda -> supplier ka credit badhta hai (hum supplier ko dena hai)
 // Payment = humne supplier ko diya -> uska debit badhta hai (jo hum dena the wo kam hua)
 // balance = debit - credit  → positive = party HUMSE lena hai (customer's outstanding), negative = HUM party ko dena hai (supplier payable)
-// Masters sheet: A=Sr No, B=Party Name, C=Type (Sundry Debtors/Sundry Creditors/Expenses..), D=Opening Amount, E=Stock Item, F=Opening Stock
+// Masters sheet: A=Sr No, B=Party Name, C=Type (Sundry Debtors/Sundry Creditors/Expenses..),
+// D=Contact Number, E=Opening Amount, F=Stock Item, G=Opening Stock
 function isCreditorType(type){ return /creditor/i.test(type||''); }
 function computeBalances(){
   balancesMap = {};
@@ -753,7 +815,7 @@ function computeBalances(){
   // Opening balances (Masters column D) — Sundry Creditors ka opening credit side jaata hai
   // (hum unhe dena hai), baaki sab (Sundry Debtors, Expenses, etc) debit side jaata hai.
   (allData.masters||[]).slice(1).forEach(r=>{
-    const name = r[1], type = r[2], opening = parseFloat(r[3])||0;
+    const name = r[1], type = r[2], opening = parseFloat(r[4])||0;
     if(!name || !opening) return;
     if(isCreditorType(type)) touch(name, 0, opening, null);
     else touch(name, opening, 0, null);
@@ -764,7 +826,7 @@ function computeBalances(){
   allData.payments.slice(1).forEach(r=> touch(r[2], parseFloat(r[3])||0, parseFloat(r[4])||0, r[0]));
 }
 
-// Stock: Masters sheet ke Stock Items column (E) se item list aur Opening Stock (F) milta hai.
+// Stock: Masters sheet ke Stock Items column (F) se item list aur Opening Stock (G) milta hai.
 // Purchase entries se qty stock me add hoti hai, Sale entries se stock me se ghatti hai.
 // Item naam Sale/Purchase ki "Item Details" column se match karke jodte hain.
 let stockMap = {};
@@ -780,10 +842,10 @@ function computeStock(){
     stockMap[key].opening += opening||0;
     if(unit) stockMap[key].unit = unit;
   };
-  // Masters ki Stock Items list (col E) se sab items apne Opening Stock (col F) ke saath register karo
+  // Masters ki Stock Items list (col F) se sab items apne Opening Stock (col G) ke saath register karo
   (allData.masters||[]).slice(1).forEach(r=>{
-    const item = r[4];
-    if(item) touch(item, '', 0, 0, parseFloat(r[5])||0);
+    const item = r[5];
+    if(item) touch(item, '', 0, 0, parseFloat(r[6])||0);
   });
   allData.sales.slice(1).forEach(r=> touch(r[3], r[5], 0, parseFloat(r[4])||0, 0));
   allData.purchase.slice(1).forEach(r=> touch(r[3], r[5], parseFloat(r[4])||0, 0, 0));
@@ -847,7 +909,76 @@ function updateDashboard(){
       </div>`;
   }
 
-  // ===== Month-wise Purchase / Sale / Profit (Profit = Sale - Purchase) =====
+  // ===== Month-wise Sale / Purchase / Closing Stock / Lena Baki / Dena Baki / Actual Gross Profit =====
+  // Gross Profit formula (asli trading account tareeka):
+  //   Cost of Goods Sold = Opening Stock (₹) + Purchase (₹) − Closing Stock (₹)
+  //   Actual Gross Profit/Loss = Sale (₹) − Cost of Goods Sold (₹)
+  // Stock ki ₹ value nikalne ke liye har item ka average purchase rate (total purchase
+  // amount ÷ total purchase qty, us tareek tak) use karte hain, kyunki sheet me stock
+  // sirf quantity me record hota hai, rupee cost me nahi.
+  function avgPurchaseRates(cutoffDate){
+    const qtySum = {}, amtSum = {};
+    purchase.forEach(r=>{
+      if(cutoffDate){ const d = parseAnyDate(r[0]); if(isNaN(d.getTime()) || d>cutoffDate) return; }
+      const item = String(r[3]||'').trim(); if(!item) return;
+      const qty = parseFloat(r[4])||0, amt = parseFloat(r[7])||0;
+      if(qty>0){ qtySum[item]=(qtySum[item]||0)+qty; amtSum[item]=(amtSum[item]||0)+amt; }
+    });
+    const rates = {};
+    Object.keys(qtySum).forEach(item=>{ rates[item] = qtySum[item] ? amtSum[item]/qtySum[item] : 0; });
+    return rates;
+  }
+  function stockValueAsOf(cutoffDate){
+    const rates = avgPurchaseRates(cutoffDate); // us tareek tak ka average purchase rate
+    const qtyMap = {};
+    masters.slice(1).forEach(r=>{
+      const item = String(r[5]||'').trim();
+      if(item) qtyMap[item] = (qtyMap[item]||0) + (parseFloat(r[6])||0);
+    });
+    const within = (dateStr)=>{
+      if(!cutoffDate) return true;
+      const d = parseAnyDate(dateStr);
+      return !isNaN(d.getTime()) && d<=cutoffDate;
+    };
+    purchase.forEach(r=>{
+      if(!within(r[0])) return;
+      const item = String(r[3]||'').trim(); if(!item) return;
+      qtyMap[item] = (qtyMap[item]||0) + (parseFloat(r[4])||0);
+    });
+    sales.forEach(r=>{
+      if(!within(r[0])) return;
+      const item = String(r[3]||'').trim(); if(!item) return;
+      qtyMap[item] = (qtyMap[item]||0) - (parseFloat(r[4])||0);
+    });
+    let total = 0;
+    Object.keys(qtyMap).forEach(item=>{ total += (qtyMap[item]||0) * (rates[item]||0); });
+    return total;
+  }
+  function balancesAsOf(cutoffDate){
+    const map = {};
+    const touch = (name, debit, credit, date)=>{
+      if(!name) return;
+      if(date){ const d = parseAnyDate(date); if(isNaN(d.getTime()) || d>cutoffDate) return; }
+      if(!map[name]) map[name] = {debit:0, credit:0};
+      map[name].debit += debit; map[name].credit += credit;
+    };
+    masters.slice(1).forEach(r=>{
+      const name=r[1], type=r[2], opening=parseFloat(r[4])||0;
+      if(!name || !opening) return;
+      if(isCreditorType(type)) touch(name,0,opening,null); else touch(name,opening,0,null);
+    });
+    sales.forEach(r=> touch(r[2], parseFloat(r[7])||0, 0, r[0]));
+    purchase.forEach(r=> touch(r[2], 0, parseFloat(r[7])||0, r[0]));
+    receipts.forEach(r=> touch(r[2], parseFloat(r[3])||0, parseFloat(r[4])||0, r[0]));
+    payments.forEach(r=> touch(r[2], parseFloat(r[3])||0, parseFloat(r[4])||0, r[0]));
+    let lena=0, dena=0;
+    Object.keys(map).forEach(name=>{
+      const b = map[name].debit - map[name].credit;
+      if(b>0) lena += b; else dena += -b;
+    });
+    return {lena, dena};
+  }
+
   function monthStats(monthsAgo){
     const now = new Date();
     const target = new Date(now.getFullYear(), now.getMonth()-monthsAgo, 1);
@@ -858,7 +989,18 @@ function updateDashboard(){
     };
     const pur = purchase.filter(r=>inMonth(r[0])).reduce((s,r)=>s+(parseFloat(r[7])||0),0);
     const sal = sales.filter(r=>inMonth(r[0])).reduce((s,r)=>s+(parseFloat(r[7])||0),0);
-    return {purchase:pur, sale:sal, profit: sal-pur, label: target.toLocaleDateString('hi-IN',{month:'long', year:'numeric'})};
+
+    const prevMonthEnd = new Date(y, m, 0, 23,59,59); // is mahine se pehle wala din — Opening Stock isी tareek tak
+    const monthEnd = monthsAgo===0 ? now : new Date(y, m+1, 0, 23,59,59); // current month ho to aaj tak, warna mahine ka aakhri din
+
+    const openingStockVal = stockValueAsOf(prevMonthEnd);
+    const closingStockVal = stockValueAsOf(monthEnd);
+    const cogs = openingStockVal + pur - closingStockVal;
+    const profit = sal - cogs;
+
+    const bal = balancesAsOf(monthEnd);
+
+    return {purchase:pur, sale:sal, closingStock:closingStockVal, lena:bal.lena, dena:bal.dena, profit, label: target.toLocaleDateString('hi-IN',{month:'long', year:'numeric'})};
   }
   const lastMonth = monthStats(1);
   const thisMonth = monthStats(0);
@@ -867,10 +1009,13 @@ function updateDashboard(){
 
   function renderMonthPills(elId, stats){
     const profitClass = stats.profit>=0 ? 'pos' : 'neg';
-    const profitLabel = stats.profit>=0 ? 'प्रॉफ़िट' : 'लॉस';
+    const profitLabel = stats.profit>=0 ? 'ग्रॉस प्रॉफ़िट' : 'ग्रॉस लॉस';
     document.getElementById(elId).innerHTML = `
-      <div class="m-pill buy"><div class="k">Purchase</div><div class="v">${fmt(stats.purchase)}</div></div>
       <div class="m-pill sell"><div class="k">Sale</div><div class="v">${fmt(stats.sale)}</div></div>
+      <div class="m-pill buy"><div class="k">Purchase</div><div class="v">${fmt(stats.purchase)}</div></div>
+      <div class="m-pill stock"><div class="k">Closing Stock</div><div class="v">${fmt(stats.closingStock)}</div></div>
+      <div class="m-pill lena"><div class="k">Lena Baki</div><div class="v">${fmt(stats.lena)}</div></div>
+      <div class="m-pill dena"><div class="k">Dena Baki</div><div class="v">${fmt(stats.dena)}</div></div>
       <div class="m-pill profit"><div class="k">${profitLabel}</div><div class="v ${profitClass}">${fmt(Math.abs(stats.profit))}</div></div>`;
   }
   renderMonthPills('lastMonthStats', lastMonth);
@@ -879,8 +1024,8 @@ function updateDashboard(){
   // recent activity — nayi entry sabse upar; date-filter chips ke hisaab se
   const actWindow = 200; // date-filter theek se kaam kare, isliye bade window se filter karte hain
   const activity = [
-    ...sales.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[7], type:'sale'})),
-    ...purchase.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[7], type:'purchase'})),
+    ...sales.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[7], type:'sale', receiver:r[8]})),
+    ...purchase.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[7], type:'purchase', receiver:r[8]})),
     ...receipts.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[4]||r[3], type:'recv'})),
     ...payments.slice(-actWindow).map(r=>({date:r[0], name:r[2], amount:r[3]||r[4], type:'pay'}))
   ].filter(a=>inRange(a.date, 'dashboard'))
@@ -896,7 +1041,7 @@ function updateDashboard(){
         <div class="avatar">${esc(initials(a.name))}</div>
         <div class="main">
           <div class="title">${esc(a.name)||'-'}</div>
-          <div class="sub">${formatDateDisplay(a.date)} · <span class="tag ${a.type}">${labels[a.type]}</span></div>
+          <div class="sub">${formatDateDisplay(a.date)} · <span class="tag ${a.type}">${labels[a.type]}</span>${a.receiver?' · → '+esc(a.receiver):''}</div>
         </div>
         <div class="amt">${fmt(a.amount)}</div>
       </div>`));
@@ -961,7 +1106,7 @@ function populateParties(resetPage){
     setRows('#partiesList', filtered.slice(0,pageState.parties).map(r=>{
       const bal = balancesMap[r[1]];
       const balAmt = bal ? bal.debit-bal.credit : 0;
-      const opening = parseFloat(r[3])||0;
+      const opening = parseFloat(r[4])||0;
       return `<div class="list-row" onclick="openPartyLedger('${esc(r[1]).replace(/'/g,"\\'")}')">
         <div class="avatar">${esc(initials(r[1]))}</div>
         <div class="main">
@@ -993,7 +1138,8 @@ function populateSales(resetPage){
 
   setRows('#salesTable tbody', filtered.slice(0,pageState.sales).map(r=>`
     <tr>
-      <td>${formatDateDisplay(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td>
+      <td>${formatDateDisplay(r[0])}</td><td>${esc(r[1])}</td>
+      <td>${esc(r[2])}${r[8]?`<br><span style="font-size:11px;color:var(--ink-soft);">→ ${esc(r[8])}</span>`:''}</td>
       <td>${esc(r[3])}</td><td>${esc(r[4])}</td>
       <td class="amt-cell">${fmt(r[6])}</td><td class="amt-cell">${fmt(r[7])}</td>
     </tr>`));
@@ -1012,7 +1158,8 @@ function populatePurchase(resetPage){
 
   setRows('#purchaseTable tbody', filtered.slice(0,pageState.purchase).map(r=>`
     <tr>
-      <td>${formatDateDisplay(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td>
+      <td>${formatDateDisplay(r[0])}</td><td>${esc(r[1])}</td>
+      <td>${esc(r[2])}${r[8]?`<br><span style="font-size:11px;color:var(--ink-soft);">→ ${esc(r[8])}</span>`:''}</td>
       <td>${esc(r[3])}</td><td>${esc(r[4])}</td>
       <td class="amt-cell">${fmt(r[6])}</td><td class="amt-cell">${fmt(r[7])}</td>
     </tr>`));
@@ -1041,14 +1188,16 @@ function populatePayments(resetPage){
 }
 
 // ===== LEDGER =====
-let currentLedgerParty = null, currentLedgerBalance = 0;
+let currentLedgerParty = null, currentLedgerBalance = 0, currentLedgerPhone = '';
 
 // Har row ke liye asli detail banata hai — party naam repeat karne ke bajaye
 // item/qty (sale, purchase) ya narration (receipt, payment) dikhata hai.
 function particularsFor(r, kind){
   if(kind==='sale' || kind==='purchase'){
     const item = r[3]||'', qty=r[4]||'', unit=r[5]||'';
-    return item + (qty ? ` × ${qty}${unit?' '+unit:''}` : '');
+    let text = item + (qty ? ` × ${qty}${unit?' '+unit:''}` : '');
+    if(r[8]) text += ` (→ ${r[8]})`; // receiver (DHOODWALE)
+    return text;
   }
   return r[5] || (kind==='receipt' ? 'Payment Received' : 'Payment Made');
 }
@@ -1082,11 +1231,13 @@ function showLedger(){
     ...payments.filter(r=>r[2]===partyName).map(r=>({date:r[0],bill:r[1],kind:'payment',particulars:particularsFor(r,'payment'),debit:parseFloat(r[3])||0,credit:parseFloat(r[4])||0}))
   ].sort((a,b)=>parseIndianDate(a.date)-parseIndianDate(b.date));
 
-  // Opening balance (Masters column D) — hamesha sabse pehli row, date-sort se bahar
+  // Opening balance (Masters column E) — hamesha sabse pehli row, date-sort se bahar
   const masterRow = (allData.masters||[]).slice(1).find(r=>r[1]===partyName);
-  const openingAmt = masterRow ? parseFloat(masterRow[3])||0 : 0;
+  const openingAmt = masterRow ? parseFloat(masterRow[4])||0 : 0;
   const openingDebit = openingAmt && !isCreditorType(masterRow[2]) ? openingAmt : 0;
   const openingCredit = openingAmt && isCreditorType(masterRow[2]) ? openingAmt : 0;
+  // Contact Number (Masters column D) — WhatsApp button ke liye
+  currentLedgerPhone = masterRow ? String(masterRow[3]||'').trim() : '';
 
   // Running balance hamesha chronological (purane se naye) order me hi sahi nikalta hai,
   // isliye pehle forward calculate karte hain — display ke liye baad me reverse kar dete hain
@@ -1136,11 +1287,34 @@ function showLedger(){
   shareBtn.style.display = (trans.length || openingAmt) ? 'flex' : 'none';
 }
 
+// Contact number ko WhatsApp ke liye normalize karta hai (10-digit Indian number -> 91XXXXXXXXXX).
+// Agar number valid nahi mila to khaali string return hota hai.
+function formatPhoneForWhatsApp(phone){
+  let digits = String(phone||'').replace(/\D/g,'');
+  if(!digits) return '';
+  if(digits.length===10) digits = '91' + digits;
+  else if(digits.length===11 && digits.startsWith('0')) digits = '91' + digits.slice(1);
+  else if(digits.length!==12 || !digits.startsWith('91')) return ''; // anjaan format — manually search karna padega
+  return digits;
+}
+
 function shareLedger(){
   if(!currentLedgerParty) return;
-  const dir = currentLedgerBalance>0 ? 'लेना बाकी (आपको लेना है)' : currentLedgerBalance<0 ? 'देना बाकी (आपको देना है)' : 'क्लियर';
-  const text = `*GS Pashukhadya*\nParty: ${currentLedgerParty}\nBalance: ₹${Math.abs(currentLedgerBalance).toLocaleString('en-IN')}\nStatus: ${dir}\n\n- Khan Baba`;
-  window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank');
+  let bodyLine;
+  if(currentLedgerBalance>0){
+    bodyLine = `आपका ${fmt(Math.abs(currentLedgerBalance))} का बैलेंस बाकी है। कृपया जल्द से जल्द इसे क्लियर करें।`;
+  } else if(currentLedgerBalance<0){
+    bodyLine = `हमारी तरफ आपका ${fmt(Math.abs(currentLedgerBalance))} बैलेंस बाकी है। जल्द ही क्लियर कर देंगे।`;
+  } else {
+    bodyLine = `आपका खाता पूरी तरह क्लियर है। धन्यवाद!`;
+  }
+  const text = `पार्टी: ${currentLedgerParty}\n${bodyLine}\n— खान बाबा मुख़्तार खान`;
+  const phone = formatPhoneForWhatsApp(currentLedgerPhone);
+  // Number available ho to seedha usi party ki chat khulti hai, warna pehle jaisa normal WhatsApp open hota hai
+  const url = phone
+    ? `https://wa.me/${phone}?text=${encodeURIComponent(text)}`
+    : `https://wa.me/?text=${encodeURIComponent(text)}`;
+  window.open(url, '_blank');
 }
 
 // ===== PWA: install prompt + service worker =====
