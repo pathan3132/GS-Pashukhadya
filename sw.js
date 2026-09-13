@@ -1,69 +1,53 @@
-const CACHE_NAME = 'ktc-app-cache-v1'; // Files change karne par ye number badhao (v2, v3...) taaki purana cache clear ho
-// REMINDER: Jab bhi naya update deploy karein — is number ko badhao (v2 -> v3...)
-// AUR script.js mein APP_VERSION + APP_CHANGELOG bhi update karo, taaki:
-//   1. Sabhi users ko purana cache clear hokar naye files (turant) milein
-//   2. Sabko "What's New" popup mein dikhe ki kya update hua hai
+// GS Pashukhadya — service worker
+// App shell cache-first (instant load), data fetch (Google Sheet) hamesha network se
+// hi jaati hai kyunki app khud usse localStorage me cache karta hai (loadData() dekho).
 
-const APP_SHELL = [
+const CACHE_NAME = 'gs-pashukhadya-shell-v3';
+const SHELL_FILES = [
   './',
-  'index.html',
-  'style.css',
-  'script.js',
-  'manifest.json',
-  'Images/ATC_Logo.png'
+  './index.html',
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png'
 ];
 
-// INSTALL: App ke zaroori files ko cache me daal do
-self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(APP_SHELL))
-      .then(() => self.skipWaiting())
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL_FILES)).catch(() => {})
   );
+  self.skipWaiting();
 });
 
-// ACTIVATE: Purane cache versions delete kar do
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
     caches.keys().then((keys) =>
-      Promise.all(
-        keys.filter((key) => key !== CACHE_NAME).map((key) => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
+      Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+    )
   );
+  self.clients.claim();
 });
 
-// FETCH: Google Sheet/Apps Script API calls hamesha LIVE (network) se jayengi — cache nahi karte,
-// warna purana/stale data (trips, ledger, docs) dikhega. Baaki sab (HTML/CSS/JS/images) cache-first.
-self.addEventListener('fetch', (e) => {
-  const url = e.request.url;
+self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
 
-  if (e.request.method !== 'GET' || url.includes('script.google.com')) {
-    return; // Normal network request hone do, service worker beech me nahi aayega
+  // Google Apps Script data calls: always go to network, never cache (live data chahiye)
+  if (url.hostname.includes('script.google.com')) {
+    return;
   }
 
-  e.respondWith(
-    caches.match(e.request).then((cached) => {
-      const networkFetch = fetch(e.request).then((response) => {
-        if (response && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => cache.put(e.request, clone));
-        }
-        return response;
-      }).catch(() => cached);
-
-      return cached || networkFetch;
+  // App shell: cache-first, background update
+  event.respondWith(
+    caches.match(event.request).then((cached) => {
+      const fetchPromise = fetch(event.request)
+        .then((res) => {
+          if (res && res.status === 200 && event.request.method === 'GET') {
+            const resClone = res.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+          }
+          return res;
+        })
+        .catch(() => cached);
+      return cached || fetchPromise;
     })
   );
 });
-
-
-
-
-
-
-
-
-
-
-
