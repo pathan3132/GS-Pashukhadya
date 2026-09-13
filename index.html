@@ -8,7 +8,7 @@
 
 <!-- ===== PWA ===== -->
 <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#6B2333">
+<meta name="theme-color" content="#0F5C46">
 <link rel="icon" href="icon-192.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="mobile-web-app-capable" content="yes">
@@ -20,23 +20,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#EFF5F1;
-  --paper-line:rgba(20,92,67,0.05);
+  --paper:#F1F6F3;
   --surface:#FFFFFF;
   --cover:#0F5C46;
-  --cover-dark:#0A3D2F;
+  --cover-dark:#083B2C;
+  --cover-light:#E6F3EE;
   --teal:#0E7C86;
   --teal-dark:#0A5960;
-  --gold:#E8A33D;
-  --gold-soft:#FCEACB;
-  --rose:#E0533D;
-  --rose-soft:#FBDCD4;
-  --ink:#16241C;
-  --ink-soft:#5C6F63;
-  --credit:#2E9E6D;
-  --debit:#E0533D;
-  --shadow:0 8px 22px rgba(10,61,47,0.12);
-  --radius:16px;
+  --gold:#D97706;
+  --gold-soft:#FEF3C7;
+  --rose:#DC2626;
+  --rose-soft:#FEE2E2;
+  --blue:#2563EB;
+  --blue-soft:#EFF6FF;
+  --ink:#0F172A;
+  --ink-soft:#64748B;
+  --ink-light:#94A3B8;
+  --credit:#16A34A;
+  --debit:#DC2626;
+  --border:rgba(15,92,70,0.12);
+  --shadow-sm:0 2px 8px rgba(15,92,70,0.06);
+  --shadow-md:0 6px 18px rgba(15,92,70,0.09);
+  --radius-lg:16px;
+  --radius-md:12px;
+  --radius-sm:8px;
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
 html{-webkit-text-size-adjust:100%;}
@@ -44,88 +51,102 @@ body{
   font-family:'Inter',sans-serif;
   background:var(--paper);
   color:var(--ink);
-  padding-bottom:78px;
-  background-image:radial-gradient(circle at 100% 0%, rgba(14,124,134,0.07), transparent 40%),
-                    radial-gradient(circle at 0% 30%, rgba(232,163,61,0.06), transparent 35%);
+  padding-bottom:84px;
+  background-image:radial-gradient(circle at 100% 0%, rgba(14,124,134,0.06), transparent 45%),
+                    radial-gradient(circle at 0% 35%, rgba(217,119,6,0.05), transparent 40%);
   background-attachment:fixed;
+  line-height:1.45;
 }
 h1,h2,h3,.brand,.big-number{font-family:'Sora',sans-serif;}
 
-/* ===== HEADER ===== */
+/* ===== TOPBAR ===== */
 .topbar{
-  background:linear-gradient(180deg,var(--cover),var(--cover-dark));
+  background:linear-gradient(180deg, var(--cover), var(--cover-dark));
   color:#F4E6C8;
   padding:14px 16px 16px;
   position:sticky;top:0;z-index:50;
-  box-shadow:0 3px 12px rgba(0,0,0,0.25);
+  box-shadow:0 4px 16px rgba(0,0,0,0.22);
 }
 .topbar-row{display:flex;align-items:center;gap:12px;}
 .seal{
-  width:46px;height:46px;border-radius:50%;
-  border:2px solid var(--gold);
+  width:44px;height:44px;border-radius:50%;
+  border:2px solid #F4E6C8;
   display:flex;align-items:center;justify-content:center;
-  font-family:'Sora',sans-serif;font-weight:700;font-size:15px;
-  color:var(--gold);flex-shrink:0;
-  background:radial-gradient(circle at 35% 30%, rgba(201,154,46,0.18), transparent 70%);
+  font-family:'Sora',sans-serif;font-weight:800;font-size:15px;
+  color:#F4E6C8;flex-shrink:0;
+  background:radial-gradient(circle at 35% 30%, rgba(244,230,200,0.2), transparent 70%);
 }
 .brand-block{flex:1;min-width:0;}
-.brand{font-size:20px;font-weight:700;letter-spacing:0.3px;line-height:1.15;}
-.brand small{display:block;font-family:'Inter',sans-serif;font-weight:500;font-size:11.5px;color:#D9C79C;margin-top:2px;letter-spacing:0.2px;}
+.brand{font-size:19px;font-weight:800;letter-spacing:0.3px;line-height:1.2;}
+.brand small{display:block;font-family:'Inter',sans-serif;font-weight:500;font-size:11px;color:#D9C79C;margin-top:2px;}
 .sync-btn{
   background:rgba(244,230,200,0.12);border:1px solid rgba(244,230,200,0.3);
-  color:#F4E6C8;width:36px;height:36px;border-radius:10px;
+  color:#F4E6C8;width:38px;height:38px;border-radius:10px;
   display:flex;align-items:center;justify-content:center;flex-shrink:0;cursor:pointer;
+  transition:transform 0.15s;
 }
-.sync-btn svg{width:18px;height:18px;}
+.sync-btn:active{transform:scale(0.92);}
+.sync-btn svg{width:19px;height:19px;}
 .sync-btn.spinning svg{animation:spin 0.9s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.sync-meta{font-size:10.5px;color:#C9B78B;margin-top:8px;padding-left:2px;}
+.sync-meta{font-size:10.5px;color:#C9B78B;margin-top:7px;padding-left:2px;}
 
 /* ===== CONTAINER ===== */
-.container{max-width:640px;margin:0 auto;padding:14px 12px 4px;}
+.container{max-width:640px;margin:0 auto;padding:14px 12px 6px;}
 .section{display:none;}
 .section.active{display:block;animation:fade .25s ease;}
 @keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
 
-/* ===== CARD ===== */
+/* ===== SECTION TITLES & CARDS ===== */
+.section-title{
+  font-size:17px;font-weight:700;color:var(--cover-dark);
+  margin:4px 2px 12px;display:flex;align-items:center;justify-content:space-between;
+}
+.section-title span.count{
+  font-family:'Inter';font-size:12px;font-weight:700;color:var(--cover-dark);
+  background:var(--cover-light);padding:3px 10px;border-radius:20px;border:1px solid var(--border);
+}
+
 .card{
   background:var(--surface);
-  border-left:3px solid var(--cover);
-  border-radius:0 var(--radius) var(--radius) 0;
-  box-shadow:var(--shadow);
-  padding:14px 14px 14px 16px;
-  margin-bottom:12px;
+  border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);
+  padding:16px;
+  margin-bottom:14px;
+  border:1px solid rgba(15,92,70,0.06);
 }
-.section-title{font-size:17px;font-weight:600;color:var(--cover-dark);margin:4px 2px 12px;display:flex;align-items:center;justify-content:space-between;}
-.section-title span.count{font-family:'Inter';font-size:12px;font-weight:600;color:var(--ink-soft);background:var(--gold-soft);padding:3px 9px;border-radius:20px;}
 
 /* ===== HERO CARD ===== */
 .hero-card{
-  background:linear-gradient(135deg,var(--cover) 0%, var(--teal-dark) 100%);
-  color:#EAF6EF;border-radius:var(--radius);padding:18px 18px 16px;margin-bottom:14px;
-  box-shadow:var(--shadow);position:relative;overflow:hidden;
+  background:linear-gradient(135deg, var(--cover) 0%, var(--teal-dark) 100%);
+  color:#EAF6EF;border-radius:var(--radius-lg);padding:18px 18px 16px;margin-bottom:14px;
+  box-shadow:0 8px 24px rgba(15,92,70,0.2);position:relative;overflow:hidden;
 }
-.hero-card::after{content:'';position:absolute;right:-30px;top:-30px;width:130px;height:130px;border-radius:50%;background:rgba(255,255,255,0.06);}
+.hero-card::after{content:'';position:absolute;right:-25px;top:-25px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,0.06);}
 .hero-card .greet{font-family:'Sora';font-size:17px;font-weight:700;}
-.hero-card .date{font-size:11.5px;opacity:0.75;margin-top:2px;}
-.hero-card .hero-row{display:flex;gap:18px;margin-top:14px;}
-.hero-card .hero-stat .k{font-size:10.5px;text-transform:uppercase;letter-spacing:0.4px;opacity:0.75;font-weight:600;}
-.hero-card .hero-stat .v{font-size:19px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums;}
+.hero-card .date{font-size:11.5px;opacity:0.8;margin-top:2px;}
+.hero-card .hero-row{display:flex;gap:14px;margin-top:14px;}
+.hero-card .hero-stat{flex:1;background:rgba(255,255,255,0.08);padding:8px 10px;border-radius:10px;}
+.hero-card .hero-stat .k{font-size:10px;text-transform:uppercase;letter-spacing:0.4px;opacity:0.85;font-weight:700;}
+.hero-card .hero-stat .v{font-size:17.5px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums;}
 
 /* ===== TOP SELLING ITEM ===== */
-.highlight-item-card{background:linear-gradient(160deg,var(--cover) 0%, var(--teal-dark) 100%);border-left:none;color:#EAF6EF;}
-.highlight-item-card .section-title{color:#EAF6EF;}
+.highlight-item-card{
+  background:linear-gradient(145deg, #0A4A38 0%, #0E7C86 100%);
+  color:#EAF6EF;padding:14px 16px;border-radius:var(--radius-lg);margin-bottom:14px;
+}
+.highlight-item-card .section-title{color:#F4E6C8;margin-bottom:8px;}
 .top-item-row{display:flex;align-items:center;gap:14px;}
 .top-item-row .medal{
-  width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,0.14);
-  display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;
+  width:48px;height:48px;border-radius:12px;background:rgba(255,255,255,0.15);
+  display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;
 }
 .top-item-row .info{flex:1;min-width:0;}
-.top-item-row .name{font-family:'Sora';font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.top-item-row .meta{font-size:12px;opacity:0.85;margin-top:3px;}
+.top-item-row .name{font-family:'Sora';font-size:15.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.top-item-row .meta{font-size:12px;opacity:0.85;margin-top:2px;}
 .top-item-row .revenue{text-align:right;flex-shrink:0;}
-.top-item-row .revenue .v{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;}
-.top-item-row .revenue .k{font-size:10px;opacity:0.8;text-transform:uppercase;}
+.top-item-row .revenue .v{font-size:17px;font-weight:800;font-variant-numeric:tabular-nums;color:#FCEACB;}
+.top-item-row .revenue .k{font-size:9.5px;opacity:0.8;text-transform:uppercase;letter-spacing:0.3px;}
 
 /* ===== MONTH SUMMARY STRUCTURE ===== */
 .month-select-dropdown {
@@ -139,22 +160,18 @@ h1,h2,h3,.brand,.big-number{font-family:'Sora',sans-serif;}
   border-radius: 8px;
   outline: none;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(15,92,70,0.08);
+  box-shadow: var(--shadow-sm);
 }
-.month-flow-card {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
+.month-flow-card {display:flex;flex-direction:column;gap:12px;}
 .month-sub-section {
   background: var(--paper);
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(20,92,67,0.07);
+  padding: 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
 }
 .month-sub-title {
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.4px;
   color: var(--cover-dark);
@@ -172,12 +189,8 @@ h1,h2,h3,.brand,.big-number{font-family:'Sora',sans-serif;}
   grid-template-columns: repeat(3, 1fr);
 }
 @media (max-width: 480px) {
-  .m-pill-grid.cols-3 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .m-pill-grid.cols-3 .m-pill.stock-pill {
-    grid-column: span 2;
-  }
+  .m-pill-grid.cols-3 {grid-template-columns: repeat(2, 1fr);}
+  .m-pill-grid.cols-3 .m-pill.stock-pill {grid-column: span 2;}
 }
 .month-sub-section .m-pill {
   background: var(--surface);
@@ -185,6 +198,7 @@ h1,h2,h3,.brand,.big-number{font-family:'Sora',sans-serif;}
   padding: 10px 8px;
   text-align: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+  border: 1px solid rgba(0,0,0,0.04);
 }
 .month-sub-section .m-pill .k {
   font-size: 10px;
@@ -195,12 +209,12 @@ h1,h2,h3,.brand,.big-number{font-family:'Sora',sans-serif;}
   line-height: 1.2;
 }
 .month-sub-section .m-pill .v {
-  font-size: 14.5px;
+  font-size: 15px;
   font-weight: 800;
   margin-top: 4px;
   font-variant-numeric: tabular-nums;
 }
-.month-sub-section .m-pill.buy .v { color: #D97706; }
+.month-sub-section .m-pill.buy .v { color: var(--gold); }
 .month-sub-section .m-pill.pay .v { color: var(--debit); }
 .month-sub-section .m-pill.sell .v { color: var(--teal-dark); }
 .month-sub-section .m-pill.recv .v { color: var(--credit); }
@@ -208,7 +222,6 @@ h1,h2,h3,.brand,.big-number{font-family:'Sora',sans-serif;}
 .month-sub-section .m-pill.dena .v { color: var(--debit); }
 .month-sub-section .m-pill.stock .v { color: var(--cover-dark); }
 
-/* Drill-Down Clickable Pill */
 .month-sub-section .m-pill.clickable {
   cursor: pointer;
   transition: transform 0.15s, background 0.15s;
@@ -221,7 +234,7 @@ h1,h2,h3,.brand,.big-number{font-family:'Sora',sans-serif;}
 .month-sub-section .m-pill.clickable .tap-hint {
   font-size: 8.5px;
   color: var(--ink-soft);
-  opacity: 0.7;
+  opacity: 0.75;
   margin-top: 3px;
   font-weight: 600;
   display: block;
@@ -258,146 +271,219 @@ h1,h2,h3,.brand,.big-number{font-family:'Sora',sans-serif;}
   border: 1px solid rgba(0,0,0,0.05);
 }
 
-/* ===== SEARCH ===== */
+/* ===== SEARCH BOX ===== */
 .search-box{position:relative;margin-bottom:12px;}
 .search-box input{
-  width:100%;padding:11px 14px 11px 38px;border:1px solid rgba(107,35,51,0.18);
-  border-radius:10px;font-size:14.5px;font-family:'Inter';background:var(--surface);color:var(--ink);
+  width:100%;padding:11px 14px 11px 40px;border:1.5px solid rgba(15,92,70,0.15);
+  border-radius:12px;font-size:14px;font-family:'Inter';background:var(--surface);color:var(--ink);
+  box-shadow:var(--shadow-sm);transition:border-color 0.2s;
 }
 .search-box input:focus{outline:none;border-color:var(--cover);}
-.search-box svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;stroke:var(--ink-soft);}
+.search-box svg{position:absolute;left:13px;top:50%;transform:translateY(-50%);width:17px;height:17px;stroke:var(--ink-soft);}
 
-/* ===== LISTS ===== */
-.list-row{
-  display:flex;align-items:center;gap:10px;
-  padding:11px 4px;border-bottom:1px dashed rgba(107,35,51,0.15);
-  cursor:pointer;
-}
-.list-row:last-child{border-bottom:none;}
-.avatar{
-  width:36px;height:36px;border-radius:50%;background:var(--gold-soft);color:var(--cover-dark);
-  display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0;
-  font-family:'Sora';
-}
-.list-row .main{flex:1;min-width:0;}
-.list-row .title{font-weight:600;font-size:14.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.list-row .sub{font-size:12px;color:var(--ink-soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.list-row .amt{font-weight:700;font-size:14px;font-variant-numeric:tabular-nums;flex-shrink:0;text-align:right;}
-
-/* ===== TAG COLORS ===== */
-.tag{font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;text-transform:uppercase;letter-spacing:0.3px;}
-.tag.sale{background:#DCFCE7;color:#15803D;border:1px solid rgba(21,128,61,0.2);}
-.tag.purchase{background:#FEF3C7;color:#B45309;border:1px solid rgba(180,83,9,0.2);}
-.tag.recv{background:#DBEAFE;color:#1D4ED8;border:1px solid rgba(29,78,216,0.25);}
-.tag.pay{background:#FEE2E2;color:#B91C1C;border:1px solid rgba(185,28,28,0.2);}
-
-/* ===== ENTRY CARDS ===== */
-.entries-list{display:flex;flex-direction:column;gap:10px;}
-.entry-card{
-  background:var(--surface);border-left:4px solid var(--cover);
-  border-radius:0 12px 12px 0;box-shadow:var(--shadow);padding:13px 14px;
-}
-.entry-card.type-sale{border-left:4px solid #0F5C46;background:#FFFFFF;}
-.entry-card.type-receipt{border-left:4px solid #2563EB;background:#F4F8FF;}
-.entry-card.type-purchase{border-left:4px solid #D97706;background:#FFFFFF;}
-.entry-card.type-payment{border-left:4px solid #E0533D;background:#FFF7F5;}
-
-.entry-head{
-  display:flex;align-items:center;gap:8px;margin-bottom:11px;
-  padding-bottom:10px;border-bottom:1px solid rgba(20,92,67,0.08);
-}
-.entry-date{font-size:12px;color:var(--ink-soft);flex:1;}
-.entry-bill{font-size:12.5px;font-weight:600;color:var(--ink);flex-shrink:0;font-variant-numeric:tabular-nums;}
-.entry-body{display:flex;flex-direction:column;gap:10px;}
-.entry-main{display:flex;flex-direction:column;gap:3px;}
-.entry-party{font-weight:700;font-size:15px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.entry-item{font-weight:600;font-size:13.5px;color:var(--ink-soft);}
-.entry-details{display:flex;flex-direction:column;gap:7px;background:rgba(20,92,67,0.04);padding:10px 12px;border-radius:8px;}
-.detail-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;line-height:1.4;}
-.detail-row .label{color:var(--ink-soft);font-weight:600;flex-shrink:0;}
-.detail-row .value{color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;}
-.detail-row.amount{font-size:14px;padding-top:5px;border-top:1px solid rgba(20,92,67,0.1);font-weight:700;}
-.receiver-box{background:rgba(232,163,61,0.12);padding:9px 11px;border-radius:6px;font-size:12.5px;color:var(--ink);font-weight:600;border-left:2px solid var(--gold);}
-
-/* ===== LEDGER ===== */
-.ledger-select-wrap{margin-bottom:12px;}
-.ledger-select-wrap select{
-  width:100%;padding:11px 12px;border-radius:10px;border:1px solid rgba(107,35,51,0.18);
-  background:var(--surface);font-size:14.5px;font-family:'Inter';color:var(--ink);
-}
-.ledger-summary{display:flex;gap:10px;margin-bottom:12px;}
-.ledger-summary .pill{flex:1;background:var(--surface);border-radius:10px;padding:10px;text-align:center;box-shadow:var(--shadow);}
-.ledger-summary .pill .k{font-size:10.5px;color:var(--ink-soft);text-transform:uppercase;font-weight:600;}
-.ledger-summary .pill .v{font-size:16px;font-weight:700;margin-top:3px;font-variant-numeric:tabular-nums;}
-.share-btn{
-  display:flex;align-items:center;justify-content:center;gap:8px;
-  background:var(--credit);color:#fff;border:none;padding:11px;border-radius:10px;
-  font-weight:600;font-size:13.5px;width:100%;margin-bottom:14px;cursor:pointer;
-}
-.share-btn svg{width:16px;height:16px;}
-
-/* ===== FILTER CHIPS & RANGE ===== */
+/* ===== FILTER CHIPS ===== */
 .filter-chips{display:flex;gap:7px;margin-bottom:12px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;scrollbar-width:none;}
 .filter-chips::-webkit-scrollbar{display:none;}
 .chip{
-  flex-shrink:0;background:var(--surface);border:1px solid rgba(107,35,51,0.2);color:var(--ink-soft);
-  font-size:12.5px;font-weight:600;font-family:'Inter';padding:7px 13px;border-radius:20px;
-  white-space:nowrap;cursor:pointer;transition:all .15s;
+  flex-shrink:0;background:var(--surface);border:1px solid rgba(15,92,70,0.18);color:var(--ink-soft);
+  font-size:12px;font-weight:700;font-family:'Inter';padding:7px 14px;border-radius:20px;
+  white-space:nowrap;cursor:pointer;transition:all .15s;box-shadow:var(--shadow-sm);
 }
 .chip.active{background:var(--cover);color:#F4E6C8;border-color:var(--cover);}
-.custom-range-row{display:none;align-items:center;gap:8px;background:var(--surface);border:1px solid rgba(107,35,51,0.15);border-radius:12px;padding:10px;margin:-4px 0 12px;flex-wrap:wrap;}
+.custom-range-row{display:none;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:10px;margin:-4px 0 12px;flex-wrap:wrap;}
 .custom-range-row.show{display:flex;}
 .custom-range-row input[type="date"]{
-  flex:1;min-width:118px;border:1px solid rgba(107,35,51,0.2);border-radius:8px;padding:7px 8px;
-  font-family:'Inter';font-size:12.5px;color:var(--ink);background:var(--paper);
+  flex:1;min-width:118px;border:1px solid rgba(15,92,70,0.2);border-radius:8px;padding:7px 8px;
+  font-family:'Inter';font-size:12px;color:var(--ink);background:var(--paper);
 }
-.custom-range-row .to-label{font-size:11px;color:var(--ink-soft);font-weight:600;}
+.custom-range-row .to-label{font-size:11px;color:var(--ink-soft);font-weight:700;}
 .custom-range-row .apply-btn{
   flex-shrink:0;background:var(--cover);color:#F4E6C8;border:none;border-radius:8px;
   padding:8px 14px;font-family:'Inter';font-weight:700;font-size:12.5px;cursor:pointer;
 }
 
+/* ===== PARTIES LIST ===== */
+.parties-card-list{display:flex;flex-direction:column;gap:9px;}
+.party-row-card{
+  background:var(--surface);border-radius:var(--radius-md);
+  padding:12px 14px;box-shadow:var(--shadow-sm);border:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;cursor:pointer;
+  transition:transform 0.15s, box-shadow 0.15s;
+}
+.party-row-card:active{transform:scale(0.985);background:var(--paper);}
+.party-row-card .avatar{
+  width:42px;height:42px;border-radius:50%;background:var(--cover-light);color:var(--cover-dark);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:15px;flex-shrink:0;
+  font-family:'Sora';border:1.5px solid rgba(15,92,70,0.2);
+}
+.party-row-card .main{flex:1;min-width:0;}
+.party-row-card .title{font-weight:700;font-size:14.5px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.party-row-card .sub{font-size:11.5px;color:var(--ink-soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.party-row-card .right-block{text-align:right;flex-shrink:0;}
+.party-row-card .amt{font-weight:800;font-size:15px;font-variant-numeric:tabular-nums;}
+.party-row-card .status-pill{
+  font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;display:inline-block;margin-top:2px;
+}
+.status-pill.debtor{background:#DCFCE7;color:var(--credit);border:1px solid rgba(22,163,74,0.2);}
+.status-pill.creditor{background:#FEE2E2;color:var(--debit);border:1px solid rgba(220,38,38,0.2);}
+.status-pill.clear{background:#F1F5F9;color:var(--ink-soft);}
+
+/* ===== STANDARD LIST ROW (Stock, Activity) ===== */
+.list-row{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 8px;border-bottom:1px dashed rgba(15,92,70,0.12);
+  cursor:pointer;transition:background 0.15s;
+}
+.list-row:last-child{border-bottom:none;}
+.list-row .avatar{
+  width:38px;height:38px;border-radius:50%;background:var(--gold-soft);color:var(--gold);
+  display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13.5px;flex-shrink:0;
+  font-family:'Sora';
+}
+.list-row .main{flex:1;min-width:0;}
+.list-row .title{font-weight:700;font-size:14px;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.list-row .sub{font-size:11.5px;color:var(--ink-soft);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.list-row .amt{font-weight:800;font-size:14.5px;font-variant-numeric:tabular-nums;flex-shrink:0;text-align:right;}
+
+/* ===== TAG BADGES ===== */
+.tag{
+  font-size:10.5px;font-weight:800;padding:3px 9px;border-radius:6px;
+  text-transform:uppercase;letter-spacing:0.3px;display:inline-flex;align-items:center;gap:4px;
+}
+.tag.sale{background:#DCFCE7;color:#15803D;border:1px solid rgba(21,128,61,0.25);}
+.tag.purchase{background:#FEF3C7;color:#B45309;border:1px solid rgba(180,83,9,0.25);}
+.tag.recv{background:#DBEAFE;color:#1D4ED8;border:1px solid rgba(29,78,216,0.25);}
+.tag.pay{background:#FEE2E2;color:#B91C1C;border:1px solid rgba(185,28,28,0.25);}
+
+/* ===== PREMIUM ENTRY CARDS (Sales, Purchase, Ledger) ===== */
+.entries-list{display:flex;flex-direction:column;gap:12px;}
+.entry-card{
+  background:var(--surface);
+  border-radius:var(--radius-md);
+  box-shadow:var(--shadow-md);
+  padding:14px 15px;
+  border:1px solid var(--border);
+  border-left:5px solid var(--cover);
+  transition:transform 0.15s;
+}
+.entry-card.type-sale{border-left-color:#0F5C46;background:#FFFFFF;}
+.entry-card.type-receipt{border-left-color:#2563EB;background:#F8FAFF;}
+.entry-card.type-purchase{border-left-color:#D97706;background:#FFFFFF;}
+.entry-card.type-payment{border-left-color:#DC2626;background:#FFF9F8;}
+
+.entry-head{
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  margin-bottom:10px;padding-bottom:9px;border-bottom:1px solid rgba(15,92,70,0.08);
+}
+.entry-date{font-size:12px;font-weight:600;color:var(--ink-soft);}
+.entry-bill{
+  font-size:12px;font-weight:700;color:var(--ink);
+  background:var(--paper);padding:3px 8px;border-radius:6px;
+  border:1px solid rgba(0,0,0,0.06);font-variant-numeric:tabular-nums;
+}
+
+.entry-body{display:flex;flex-direction:column;gap:8px;}
+.entry-main{display:flex;flex-direction:column;gap:2px;}
+.entry-party{font-weight:800;font-size:15px;color:var(--cover-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+.entry-details{
+  display:flex;flex-direction:column;gap:6px;
+  background:rgba(15,92,70,0.035);padding:10px 12px;border-radius:10px;
+  border:1px solid rgba(15,92,70,0.06);
+}
+.detail-row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-size:13px;line-height:1.4;}
+.detail-row .label{color:var(--ink-soft);font-weight:600;}
+.detail-row .value{color:var(--ink);text-align:right;font-variant-numeric:tabular-nums;}
+
+/* Highlighted summary rows inside cards */
+.detail-row.total-row{
+  border-top:1.5px dashed rgba(15,92,70,0.18);
+  margin-top:4px;padding-top:7px;
+  font-size:14px;font-weight:800;
+}
+.detail-row.balance-highlight{
+  background:rgba(255,255,255,0.85);
+  padding:6px 8px;border-radius:8px;
+  margin-top:3px;border:1px solid rgba(0,0,0,0.05);
+}
+.detail-row.balance-highlight .label{color:var(--ink);font-weight:700;}
+.detail-row.balance-highlight .value{font-size:15px;font-weight:800;}
+
+/* DHOODWALE / Receiver Signature Box */
+.receiver-box{
+  background:linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
+  padding:8px 11px;border-radius:8px;font-size:12.5px;color:#92400E;font-weight:700;
+  border-left:3.5px solid var(--gold);border-top:1px solid rgba(217,119,6,0.15);
+  border-right:1px solid rgba(217,119,6,0.15);border-bottom:1px solid rgba(217,119,6,0.15);
+  display:flex;align-items:center;gap:5px;
+}
+
+/* ===== LEDGER SUMMARY HEADER ===== */
+.ledger-select-wrap{margin-bottom:12px;}
+.ledger-select-wrap select{
+  width:100%;padding:12px 14px;border-radius:12px;border:1.5px solid rgba(15,92,70,0.2);
+  background:var(--surface);font-size:14.5px;font-family:'Inter';font-weight:700;color:var(--cover-dark);
+  box-shadow:var(--shadow-sm);outline:none;
+}
+.ledger-summary{display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;margin-bottom:12px;}
+.ledger-summary .pill{
+  background:var(--surface);border-radius:12px;padding:12px 8px;text-align:center;
+  box-shadow:var(--shadow-sm);border:1px solid var(--border);
+}
+.ledger-summary .pill .k{font-size:10px;color:var(--ink-soft);text-transform:uppercase;font-weight:700;letter-spacing:0.3px;}
+.ledger-summary .pill .v{font-size:16px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums;}
+
+.share-btn{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  background:#16A34A;color:#fff;border:none;padding:12px;border-radius:12px;
+  font-weight:700;font-size:14px;width:100%;margin-bottom:14px;cursor:pointer;
+  box-shadow:0 4px 12px rgba(22,163,74,0.25);transition:transform 0.15s;
+}
+.share-btn:active{transform:scale(0.98);}
+.share-btn svg{width:18px;height:18px;}
+
 /* ===== TABLE ===== */
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--radius-md);border:1px solid var(--border);}
 table{width:100%;border-collapse:collapse;font-size:13px;min-width:520px;}
-th{background:var(--cover);color:#F4E6C8;padding:9px 8px;text-align:left;font-weight:600;font-size:11.5px;text-transform:uppercase;letter-spacing:0.3px;position:sticky;top:0;}
-td{padding:9px 8px;border-bottom:1px solid rgba(107,35,51,0.08);white-space:nowrap;}
-tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
-.amt-cell{font-variant-numeric:tabular-nums;font-weight:600;}
+th{background:var(--cover);color:#F4E6C8;padding:10px 8px;text-align:left;font-weight:700;font-size:11.5px;text-transform:uppercase;letter-spacing:0.3px;position:sticky;top:0;}
+td{padding:10px 8px;border-bottom:1px solid rgba(15,92,70,0.07);white-space:nowrap;}
+tbody tr:nth-child(even){background:rgba(15,92,70,0.025);}
+.amt-cell{font-variant-numeric:tabular-nums;font-weight:700;}
 
 /* ===== LOAD MORE & EMPTY ===== */
-.loadmore-wrap{text-align:center;margin-top:12px;}
+.loadmore-wrap{text-align:center;margin-top:14px;}
 .loadmore-btn{
-  background:transparent;border:1.5px dashed rgba(107,35,51,0.35);color:var(--cover-dark);
-  font-family:'Inter';font-weight:700;font-size:13px;padding:10px 20px;border-radius:10px;
-  cursor:pointer;width:100%;
+  background:var(--surface);border:1.5px dashed rgba(15,92,70,0.35);color:var(--cover-dark);
+  font-family:'Inter';font-weight:700;font-size:13px;padding:11px 20px;border-radius:10px;
+  cursor:pointer;width:100%;box-shadow:var(--shadow-sm);transition:all 0.15s;
 }
-.empty{text-align:center;padding:38px 16px;color:var(--ink-soft);}
-.empty svg{width:44px;height:44px;stroke:var(--gold);margin-bottom:10px;}
-.empty p{font-size:13.5px;}
+.loadmore-btn:active{background:var(--cover-light);}
+.empty{text-align:center;padding:36px 16px;color:var(--ink-soft);}
+.empty svg{width:42px;height:42px;stroke:var(--gold);margin-bottom:10px;}
+.empty p{font-size:13.5px;font-weight:600;}
 
 /* ===== BOTTOM NAV ===== */
 .bottomnav{
   position:fixed;bottom:0;left:0;right:0;background:var(--surface);
-  border-top:1px solid rgba(107,35,51,0.14);
-  display:flex;justify-content:space-around;padding:6px 2px 8px;z-index:50;
-  box-shadow:0 -4px 14px rgba(74,23,34,0.10);
+  border-top:1px solid rgba(15,92,70,0.12);
+  display:flex;justify-content:space-around;padding:7px 4px 9px;z-index:50;
+  box-shadow:0 -4px 16px rgba(10,61,47,0.08);
 }
 .navbtn{
   background:none;border:none;display:flex;flex-direction:column;align-items:center;gap:3px;
-  color:var(--ink-soft);font-size:10px;font-weight:600;padding:5px 4px;cursor:pointer;flex:1;
-  font-family:'Inter';
+  color:var(--ink-soft);font-size:10.5px;font-weight:700;padding:5px 6px;cursor:pointer;flex:1;
+  font-family:'Inter';transition:color 0.15s;
 }
-.navbtn svg{width:20px;height:20px;stroke:var(--ink-soft);fill:none;stroke-width:1.8;}
+.navbtn svg{width:21px;height:21px;stroke:var(--ink-soft);fill:none;stroke-width:2;}
 .navbtn.active{color:var(--cover);}
 .navbtn.active svg{stroke:var(--cover);}
 
-/* ===== DRILL-DOWN POPUP MODAL (Bottom Sheet) ===== */
+/* ===== DRILL-DOWN MODAL ===== */
 .drill-modal-overlay {
   display: none;
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(10, 36, 28, 0.65);
+  background: rgba(8, 59, 44, 0.65);
   z-index: 9999;
   backdrop-filter: blur(4px);
   -webkit-backdrop-filter: blur(4px);
@@ -418,14 +504,14 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
   border-radius: 20px 20px 0 0;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+  box-shadow: 0 -10px 32px rgba(0,0,0,0.3);
   animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
 .drill-modal-header {
   padding: 14px 16px;
-  border-bottom: 1px solid rgba(20,92,67,0.1);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -433,27 +519,23 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
   border-radius: 20px 20px 0 0;
 }
 .drill-modal-title-wrap { flex: 1; min-width: 0; }
-.drill-modal-title { font-family: 'Sora', sans-serif; font-size: 15px; font-weight: 700; color: var(--cover-dark); }
-.drill-modal-sub { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; }
+.drill-modal-title { font-family: 'Sora', sans-serif; font-size: 15.5px; font-weight: 800; color: var(--cover-dark); }
+.drill-modal-sub { font-size: 11.5px; color: var(--ink-soft); margin-top: 2px; font-weight: 600; }
 
 .drill-modal-close {
   background: rgba(0, 0, 0, 0.08);
   border: none;
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  line-height: 1;
+  font-size: 18px;
   cursor: pointer;
   color: var(--ink);
   font-weight: 700;
-  flex-shrink: 0;
   touch-action: manipulation;
-  -webkit-tap-highlight-color: transparent;
-  z-index: 10;
 }
 .drill-modal-close:active { background: rgba(0, 0, 0, 0.2); transform: scale(0.92); }
 
@@ -464,17 +546,16 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
   -webkit-overflow-scrolling: touch;
 }
 
-/* Level 2 Party Header inside Modal */
 .drill-party-header {
   background: var(--paper);
-  border: 1px solid rgba(20,92,67,0.12);
+  border: 1px solid var(--border);
   border-radius: 12px;
   padding: 12px;
   margin-bottom: 12px;
 }
 .drill-back-btn {
-  background: rgba(20,92,67,0.08);
-  border: 1px solid rgba(20,92,67,0.2);
+  background: var(--cover-light);
+  border: 1px solid rgba(15,92,70,0.2);
   color: var(--cover-dark);
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -494,7 +575,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
   gap: 8px;
   flex-wrap: wrap;
 }
-.drill-party-headline .p-name { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: var(--cover-dark); }
+.drill-party-headline .p-name { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 800; color: var(--cover-dark); }
 .drill-party-headline .p-amt { font-size: 16px; font-weight: 800; color: var(--credit); font-variant-numeric: tabular-nums; }
 .drill-party-headline.is-purchase .p-amt { color: var(--debit); }
 .drill-full-ledger-btn {
@@ -503,7 +584,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
   background: var(--cover);
   color: #F4E6C8;
   border: none;
-  padding: 9px 12px;
+  padding: 10px 12px;
   border-radius: 8px;
   font-family: 'Inter', sans-serif;
   font-weight: 700;
@@ -513,20 +594,21 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
   align-items: center;
   justify-content: center;
   gap: 6px;
+  box-shadow: var(--shadow-sm);
 }
 
 /* Install banner */
 .install-banner{
   display:none;align-items:center;gap:10px;background:var(--gold-soft);color:var(--cover-dark);
-  padding:10px 12px;border-radius:12px;margin-bottom:12px;box-shadow:var(--shadow);
+  padding:10px 12px;border-radius:12px;margin-bottom:12px;box-shadow:var(--shadow-sm);border:1px solid rgba(217,119,6,0.2);
 }
 .install-banner.show{display:flex;}
-.install-banner .txt{flex:1;font-size:12.5px;font-weight:600;line-height:1.3;}
+.install-banner .txt{flex:1;font-size:12.5px;font-weight:700;line-height:1.3;}
 .install-banner button.go{
   background:var(--cover);color:#F4E6C8;border:none;padding:8px 14px;border-radius:8px;
   font-weight:700;font-size:12.5px;font-family:'Inter';cursor:pointer;flex-shrink:0;
 }
-.install-banner button.close{background:none;border:none;color:var(--cover-dark);font-size:18px;line-height:1;cursor:pointer;padding:4px;flex-shrink:0;opacity:0.6;}
+.install-banner button.close{background:none;border:none;color:var(--cover-dark);font-size:18px;cursor:pointer;padding:4px;opacity:0.7;}
 </style>
 </head>
 <body>
@@ -539,7 +621,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
       <small>प्रोप्राइटर: मुख्तार खान (खान बाबा)</small>
     </div>
     <button class="sync-btn" id="refreshBtn" onclick="loadData(true)" aria-label="Refresh">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.36M21 4v6h-6"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M21 12a9 9 0 1 1-2.6-6.36M21 4v6h-6"/></svg>
     </button>
   </div>
   <div class="sync-meta" id="syncMeta">डेटा लोड हो रहा है...</div>
@@ -548,9 +630,9 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
 <div class="container">
 
   <div class="install-banner" id="installBanner">
-    <span class="txt">📲 GS Pashukhadya ko apne phone ki home screen par app ki tarah install karo</span>
+    <span class="txt">📲 GS Pashukhadya ऐप को अपने फ़ोन की होम स्क्रीन पर इंस्टॉल करें</span>
     <button class="go" id="installGoBtn">Install</button>
-    <button class="close" id="installCloseBtn" aria-label="Band karo">×</button>
+    <button class="close" id="installCloseBtn" aria-label="Close">×</button>
   </div>
 
   <!-- DASHBOARD -->
@@ -565,7 +647,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
       </div>
     </div>
 
-    <div class="card highlight-item-card">
+    <div class="highlight-item-card">
       <div class="section-title">🏆 सबसे ज़्यादा बिकने वाला आइटम</div>
       <div id="topSellingItem"></div>
     </div>
@@ -583,12 +665,11 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
       <div class="section-title">📦 Stock Summary <span class="count" id="stockCount">0</span></div>
       <div class="search-box">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-        <input type="text" id="stockSearch" placeholder="Item search karo..." oninput="populateStock(true)">
+        <input type="text" id="stockSearch" placeholder="Item search karein..." oninput="populateStock(true)">
       </div>
       
       <div id="stockList"></div>
       
-      <!-- 0 Stock Toggle Button aur List -->
       <div class="zero-stock-wrap" id="zeroStockWrap" style="display:none;">
         <button type="button" class="zero-stock-btn" onclick="toggleZeroStock()">
           <span id="zeroStockBtnLabel">📦 0 स्टॉक वाले आइटम (0)</span>
@@ -626,7 +707,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
     <div class="section-title">Party Masters <span class="count" id="partiesCount">0</span></div>
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" id="partySearch" placeholder="Party naam search karo..." oninput="populateParties(true)">
+      <input type="text" id="partySearch" placeholder="Party naam search karein..." oninput="populateParties(true)">
     </div>
     <div class="filter-chips" id="partiesFilterChips">
       <button class="chip active" data-f="all" onclick="setPartyFilter('all',this)">सब</button>
@@ -634,7 +715,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
       <button class="chip" data-f="creditor" onclick="setPartyFilter('creditor',this)">🔴 देना है</button>
       <button class="chip" data-f="clear" onclick="setPartyFilter('clear',this)">✅ क्लियर</button>
     </div>
-    <div class="card" style="padding-left:14px;border-left:none;" id="partiesList"></div>
+    <div class="parties-card-list" id="partiesList"></div>
     <div class="loadmore-wrap" id="partiesMoreWrap" style="display:none;">
       <button class="loadmore-btn" onclick="loadMore('parties', populateParties)">Aur Parties Dikhao</button>
     </div>
@@ -645,7 +726,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
     <div class="section-title">Sale Entries <span class="count" id="salesCount">0</span></div>
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" id="salesSearch" placeholder="Party ya item search karo..." oninput="populateSales(true)">
+      <input type="text" id="salesSearch" placeholder="Party ya item search karein..." oninput="populateSales(true)">
     </div>
     <div class="filter-chips" id="salesRangeChips">
       <button class="chip active" data-range="all" onclick="setRange('sales','all',this)">सब</button>
@@ -671,7 +752,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
     <div class="section-title">Purchase Entries <span class="count" id="purchaseCount">0</span></div>
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" id="purchaseSearch" placeholder="Party ya item search karo..." oninput="populatePurchase(true)">
+      <input type="text" id="purchaseSearch" placeholder="Party ya item search karein..." oninput="populatePurchase(true)">
     </div>
     <div class="filter-chips" id="purchaseRangeChips">
       <button class="chip active" data-range="all" onclick="setRange('purchase','all',this)">सब</button>
@@ -697,7 +778,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
     <div class="section-title">Party Ledger</div>
     <div class="ledger-select-wrap">
       <select id="partySelect" onchange="showLedger()">
-        <option>Choose Party...</option>
+        <option value="">Choose Party...</option>
       </select>
     </div>
     <div class="filter-chips" id="ledgerRangeChips">
@@ -716,7 +797,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
     <div id="ledgerSummaryWrap"></div>
     <button class="share-btn" id="shareLedgerBtn" onclick="shareLedger()" style="display:none;">
       <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2z"/></svg>
-      WhatsApp पर भेजो
+      WhatsApp पर खाता भेजें
     </button>
     <div class="entries-list" id="ledgerList"></div>
   </div>
@@ -726,7 +807,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
     <div class="section-title">Receipts &amp; Payments <span class="count" id="paymentsCount">0</span></div>
     <div class="search-box">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
-      <input type="text" id="paymentsSearch" placeholder="Account naam search karo..." oninput="populatePayments(true)">
+      <input type="text" id="paymentsSearch" placeholder="Account naam search karein..." oninput="populatePayments(true)">
     </div>
     <div class="filter-chips" id="paymentsRangeChips">
       <button class="chip active" data-range="all" onclick="setRange('payments','all',this)">सब</button>
@@ -741,7 +822,7 @@ tbody tr:nth-child(even){background:rgba(107,35,51,0.03);}
       <input type="date" id="paymentsTo">
       <button class="apply-btn" onclick="applyCustomRange('payments')">Apply</button>
     </div>
-    <div class="card table-wrap" style="border-left:none;padding:0;">
+    <div class="table-wrap">
       <table id="paymentsTable">
         <thead><tr><th>Date</th><th>Bill</th><th>Account</th><th>Debit</th><th>Credit</th><th>Narration</th></tr></thead>
         <tbody></tbody>
@@ -977,13 +1058,14 @@ function processEntries(rawEntries){
 
   (rawEntries||[]).slice(1).forEach(row=>{
     const rawParticulars = String(row[3]||'').trim();
+    const rawItem = String(row[4]||'').trim();
 
-    if(/^dhoodwale\s*:/i.test(rawParticulars)){
+    // DHOODWALE row: receiver info
+    const isDhood = /dhoodwale/i.test(rawParticulars) || /dhoodwale/i.test(rawItem);
+    if(isDhood){
+      const target = /dhoodwale/i.test(rawParticulars) ? rawParticulars : rawItem;
       if(lastPushed){
-        const receiverName = rawParticulars.replace(/^dhoodwale\s*:/i,'').trim();
-        if(receiverName && !/^direct$/i.test(receiverName)){
-          lastPushed[8] = receiverName;
-        }
+        lastPushed[8] = target;
       }
       return;
     }
@@ -1401,15 +1483,15 @@ function renderSelectedMonth(){
     </div>`;
 }
 
-// ===== 2-LEVEL DRILL-DOWN MODAL LOGIC (Sale, Purchase, Receipt, Payment) =====
+// ===== 2-LEVEL DRILL-DOWN MODAL LOGIC =====
 let currentDrillType = null;
-let currentDrillPartyData = {}; // Party-wise grouped data
-let selectedDrillParty = null;  // Level-2 Selected Party
-let currentDrillItems = [];     // Level-1 Summary List
+let currentDrillPartyData = {};
+let selectedDrillParty = null;
+let currentDrillItems = [];
 
 function openDrillModal(type){
   currentDrillType = type;
-  selectedDrillParty = null; // Reset to Level 1
+  selectedDrillParty = null;
   document.getElementById('drillSearchInput').value = '';
   
   if (!selectedReportMonthKey) return;
@@ -1434,7 +1516,6 @@ function openDrillModal(type){
   currentDrillItems = [];
   currentDrillPartyData = {};
 
-  // --- A. SALE: Group by Party ---
   if(type === 'sale'){
     title = `🛒 कुल बिक्री (पार्टी-वाइज़) — ${monthLabel}`;
     const filteredSales = sales.filter(r => inMonth(r[0]) && (parseFloat(r[4]) || 0) > 0);
@@ -1484,8 +1565,6 @@ function openDrillModal(type){
 
     currentDrillItems = Object.values(currentDrillPartyData).sort((a,b) => b.totalAmount - a.totalAmount);
   }
-
-  // --- B. PURCHASE: Group by Party ---
   else if(type === 'purchase'){
     title = `📦 कुल खरीद (पार्टी-वाइज़) — ${monthLabel}`;
     const filteredPur = purchase.filter(r => inMonth(r[0]) && (parseFloat(r[4]) || 0) > 0);
@@ -1535,8 +1614,6 @@ function openDrillModal(type){
 
     currentDrillItems = Object.values(currentDrillPartyData).sort((a,b) => b.totalAmount - a.totalAmount);
   }
-
-  // --- C. RECEIPT: Group by Party (पार्टी-वाइज़ वसूली) ---
   else if(type === 'receipt'){
     title = `💵 पेमेंट मिला (पार्टी-वाइज़) — ${monthLabel}`;
     const filteredRecv = receipts.filter(r => inMonth(r[0]));
@@ -1565,15 +1642,12 @@ function openDrillModal(type){
       totalAmt += amt;
     });
 
-    // Entries ko date-wise sort karo
     Object.values(currentDrillPartyData).forEach(p => {
       p.entries.sort((a,b) => parseIndianDate(b.date) - parseIndianDate(a.date));
     });
 
     currentDrillItems = Object.values(currentDrillPartyData).sort((a,b) => b.totalAmount - a.totalAmount);
   }
-
-  // --- D. PAYMENT: Group by Party (पार्टी-वाइज़ भुगतान) ---
   else if(type === 'payment'){
     title = `💸 पेमेंट दिया (पार्टी-वाइज़) — ${monthLabel}`;
     const filteredPay = payments.filter(r => inMonth(r[0]));
@@ -1608,8 +1682,6 @@ function openDrillModal(type){
 
     currentDrillItems = Object.values(currentDrillPartyData).sort((a,b) => b.totalAmount - a.totalAmount);
   }
-
-  // --- E. OPENING / CLOSING LENA & DENA ---
   else if(type.includes('Lena') || type.includes('Dena')){
     const isOpening = type.includes('opening');
     const isLena = type.includes('Lena');
@@ -1646,8 +1718,6 @@ function openDrillModal(type){
     });
     currentDrillItems.sort((a,b) => b.balance - a.balance);
   }
-
-  // --- F. CLOSING STOCK ---
   else if(type === 'closingStock'){
     title = `📦 गोदाम में स्टॉक — ${monthLabel}`;
     const cutoffDate = isCurrentMonth ? now : new Date(y, m + 1, 0, 23, 59, 59);
@@ -1749,7 +1819,7 @@ function renderDrillList(items){
   const isRecv = currentDrillType === 'receipt';
   const isPay = currentDrillType === 'payment';
 
-  // ===== LEVEL 2: SPECIFIC PARTY DETAILS (Sale / Purchase / Receipt / Payment) =====
+  // LEVEL 2: SPECIFIC PARTY DETAILS
   if((isSale || isPurchase || isRecv || isPay) && selectedDrillParty){
     const partyData = currentDrillPartyData[selectedDrillParty];
     if(!partyData){
@@ -1759,7 +1829,6 @@ function renderDrillList(items){
 
     const q = (document.getElementById('drillSearchInput')?.value || '').toLowerCase().trim();
 
-    // --- LEVEL 2 for SALE & PURCHASE ---
     if(isSale || isPurchase){
       let bills = Object.values(partyData.bills).sort((a,b) => parseIndianDate(b.date) - parseIndianDate(a.date));
       if(q){
@@ -1794,18 +1863,22 @@ function renderDrillList(items){
               <span class="entry-bill">${esc(d.bill)}</span>
             </div>
             <div class="entry-body">
-              <div class="entry-details" style="margin-top:2px;">
+              <div class="entry-details">
                 ${d.items.map(it => `
                   <div class="detail-row">
                     <span class="label">${esc(it.item)}:</span>
                     <span class="value">${it.qty} ${esc(it.unit)} × ₹${fmt(it.rate)} = ₹${fmt(it.amount)}</span>
                   </div>
                 `).join('')}
-                <div class="detail-row amount" style="border-top:1px solid rgba(20,92,67,0.1); margin-top:6px; padding-top:6px;">
+                <div class="detail-row total-row">
                   <span class="label">बिल टोटल:</span>
-                  <span class="value" style="font-weight:800; color:${isSale ? 'var(--cover-dark)' : 'var(--debit)'};">₹${fmt(d.total)}</span>
+                  <span class="value" style="color:${isSale ? 'var(--cover-dark)' : 'var(--debit)'};">₹${fmt(d.total)}</span>
                 </div>
-                ${d.receiver ? `<div class="receiver-box" style="margin-top:6px;"><span class="label">📦 ${isPurchase ? 'From' : 'Delivered to'}:</span> ${esc(d.receiver)}</div>` : ''}
+                ${d.receiver ? `
+                  <div class="receiver-box" style="margin-top:6px;">
+                    <span>📦 ${isPurchase ? 'From' : 'Delivered to'}: ${esc(d.receiver)}</span>
+                  </div>
+                ` : ''}
               </div>
             </div>
           </div>
@@ -1814,7 +1887,6 @@ function renderDrillList(items){
       return;
     }
 
-    // --- LEVEL 2 for RECEIPT & PAYMENT ---
     if(isRecv || isPay){
       let entries = partyData.entries.slice();
       if(q){
@@ -1848,14 +1920,14 @@ function renderDrillList(items){
               <span class="entry-bill">${esc(e.bill)}</span>
             </div>
             <div class="entry-body">
-              <div class="entry-details" style="margin-top:2px;">
+              <div class="entry-details">
                 <div class="detail-row">
                   <span class="label">विवरण:</span>
                   <span class="value" style="font-weight:600;">${esc(e.remark)}</span>
                 </div>
-                <div class="detail-row amount" style="border-top:1px solid rgba(20,92,67,0.1); margin-top:6px; padding-top:6px;">
+                <div class="detail-row total-row">
                   <span class="label">${isRecv ? 'रुपये मिले:' : 'रुपये दिए:'}</span>
-                  <span class="value" style="font-weight:800; color:${isRecv ? 'var(--credit)' : 'var(--debit)'}; font-size:15px;">₹${fmt(e.amount)}</span>
+                  <span class="value" style="color:${isRecv ? 'var(--credit)' : 'var(--debit)'}; font-size:15px;">₹${fmt(e.amount)}</span>
                 </div>
               </div>
             </div>
@@ -1866,7 +1938,7 @@ function renderDrillList(items){
     }
   }
 
-  // ===== LEVEL 1: PARTY SUMMARY LIST (Sale / Purchase / Receipt / Payment) =====
+  // LEVEL 1: SUMMARY
   if(isSale || isPurchase || isRecv || isPay){
     items = items || currentDrillItems;
     if(!items || items.length === 0){
@@ -1893,7 +1965,7 @@ function renderDrillList(items){
           </div>
           <div class="amt" style="color:${(isSale || isRecv) ? 'var(--credit)' : 'var(--debit)'}; font-weight:800;">
             ₹${fmt(p.totalAmount)}
-            <span style="font-size:10px; color:var(--cover-dark); opacity:0.75; display:block; font-weight:600;">डिटेल देखें ▶</span>
+            <span style="font-size:10px; color:var(--cover-dark); opacity:0.75; display:block; font-weight:700;">डिटेल देखें ▶</span>
           </div>
         </div>
       `;
@@ -1901,7 +1973,7 @@ function renderDrillList(items){
     return;
   }
 
-  // ===== OTHER TYPES (Lena, Dena, Stock) =====
+  // OTHER TYPES
   items = items || currentDrillItems;
   if(!items || items.length === 0){
     listEl.innerHTML = '<div class="empty" style="padding:20px;"><p>कोई रिकॉर्ड नहीं मिला</p></div>';
@@ -1998,7 +2070,7 @@ function populateStock(resetPage){
           <div class="title">${esc(i.name)}</div>
           <div class="sub">${i.opening ? `Opening ${i.opening} · `:''}Purchase ${i.purchased} · Sale ${i.sold}</div>
         </div>
-        <div class="amt" style="color:${i.balance < 0 ? 'var(--debit)' : 'var(--ink)'}; font-weight:700;">
+        <div class="amt" style="color:${i.balance < 0 ? 'var(--debit)' : 'var(--ink)'}; font-weight:800;">
           ${i.balance} ${esc(i.unit)}
         </div>
       </div>`));
@@ -2026,7 +2098,7 @@ function populateStock(resetPage){
           <div class="title" style="color:#475569;">${esc(i.name)}</div>
           <div class="sub">${i.opening ? `Opening ${i.opening} · `:''}Purchase ${i.purchased} · Sale ${i.sold}</div>
         </div>
-        <div class="amt" style="color:#94A3B8; font-weight:600;">0 ${esc(i.unit)}</div>
+        <div class="amt" style="color:#94A3B8; font-weight:700;">0 ${esc(i.unit)}</div>
       </div>`));
   } else {
     zeroWrap.style.display = 'none';
@@ -2053,20 +2125,36 @@ function populateParties(resetPage){
   document.getElementById('partiesCount').textContent = filtered.length;
 
   if(filtered.length===0){
-    document.getElementById('partiesList').innerHTML = `<div class="empty"><p>Koi party nahi mili</p></div>`;
+    document.getElementById('partiesList').innerHTML = `<div class="empty"><p>कोई पार्टी नहीं मिली</p></div>`;
   } else {
     setRows('#partiesList', filtered.slice(0,pageState.parties).map(r=>{
       const bal = balancesMap[r[1]];
       const balAmt = bal ? bal.debit-bal.credit : 0;
       const opening = parseFloat(r[4])||0;
-      return `<div class="list-row" onclick="openPartyLedger('${esc(r[1]).replace(/'/g,"\\'")}')">
-        <div class="avatar">${esc(initials(r[1]))}</div>
-        <div class="main">
-          <div class="title">${esc(r[1])}</div>
-          <div class="sub">${esc(r[2]||'-')}${opening?' · Opening '+fmt(opening):''}</div>
+      
+      let statusClass = 'clear';
+      let statusText = 'क्लियर ✅';
+      if(balAmt > 0){
+        statusClass = 'debtor';
+        statusText = '🟢 लेना है';
+      } else if(balAmt < 0){
+        statusClass = 'creditor';
+        statusText = '🔴 देना है';
+      }
+
+      return `
+        <div class="party-row-card" onclick="openPartyLedger('${esc(r[1]).replace(/'/g,"\\'")}')">
+          <div class="avatar">${esc(initials(r[1]))}</div>
+          <div class="main">
+            <div class="title">${esc(r[1])}</div>
+            <div class="sub">${esc(r[2]||'-')}${r[3] ? ` · 📞 ${esc(r[3])}` : ''}${opening ? ` · Op: ${fmt(opening)}` : ''}</div>
+          </div>
+          <div class="right-block">
+            <div class="amt" style="color:${balAmt>0?'var(--credit)':balAmt<0?'var(--debit)':'var(--ink-soft)'}">${fmt(Math.abs(balAmt))}</div>
+            <span class="status-pill ${statusClass}">${statusText}</span>
+          </div>
         </div>
-        <div class="amt" style="color:${balAmt>0?'var(--credit)':balAmt<0?'var(--debit)':'var(--ink-soft)'}">${fmt(Math.abs(balAmt))}</div>
-      </div>`;
+      `;
     }));
   }
   renderMoreBtn('parties','partiesMoreWrap',filtered.length);
@@ -2131,14 +2219,13 @@ function populateSales(resetPage){
     setRows('#salesList', filtered.slice(0,pageState.sales).map(d=>{
       return `<div class="entry-card type-sale">
         <div class="entry-head">
-          <span class="tag sale">Sale</span>
+          <span class="tag sale">🛒 Sale</span>
           <span class="entry-date">${formatDateDisplay(d.date)}</span>
-          <span class="entry-bill">${esc(d.bill)}</span>
+          <span class="entry-bill">#${esc(d.bill)}</span>
         </div>
         <div class="entry-body">
           <div class="entry-main">
             <div class="entry-party">${esc(d.party)}</div>
-            <div class="entry-item">${d.items.map(it=>`${esc(it.item)}`).join(', ')}</div>
           </div>
           <div class="entry-details">
             ${d.items.map(it=>`
@@ -2147,11 +2234,15 @@ function populateSales(resetPage){
                 <span class="value">${it.qty} ${esc(it.unit)} × ₹${fmt(it.rate)} = ₹${fmt(it.amount)}</span>
               </div>
             `).join('')}
-            <div class="detail-row amount" style="border-top:1px solid rgba(20,92,67,0.1);margin-top:8px;padding-top:8px;">
-              <span class="label">Total:</span>
-              <span class="value">₹${fmt(d.totalAmount)}</span>
+            <div class="detail-row total-row">
+              <span class="label">Total Amount:</span>
+              <span class="value" style="color:var(--cover-dark);">₹${fmt(d.totalAmount)}</span>
             </div>
-            ${d.receiver?`<div class="receiver-box"><span class="label">📦 Delivered to:</span> ${esc(d.receiver)} ${d.receiverDetail?`(${esc(d.receiverDetail)})`:''}</div>`:''}
+            ${d.receiver?`
+              <div class="receiver-box">
+                <span>📦 Delivered to: ${esc(d.receiver)} ${d.receiverDetail?`(${esc(d.receiverDetail)})`:''}</span>
+              </div>
+            `:''}
           </div>
         </div>
       </div>`;
@@ -2213,14 +2304,13 @@ function populatePurchase(resetPage){
     setRows('#purchaseList', filtered.slice(0,pageState.purchase).map(d=>{
       return `<div class="entry-card type-purchase">
         <div class="entry-head">
-          <span class="tag purchase">Purchase</span>
+          <span class="tag purchase">📦 Purchase</span>
           <span class="entry-date">${formatDateDisplay(d.date)}</span>
-          <span class="entry-bill">${esc(d.bill)}</span>
+          <span class="entry-bill">#${esc(d.bill)}</span>
         </div>
         <div class="entry-body">
           <div class="entry-main">
             <div class="entry-party">${esc(d.party)}</div>
-            <div class="entry-item">${d.items.map(it=>`${esc(it.item)}`).join(', ')}</div>
           </div>
           <div class="entry-details">
             ${d.items.map(it=>`
@@ -2229,11 +2319,15 @@ function populatePurchase(resetPage){
                 <span class="value">${it.qty} ${esc(it.unit)} × ₹${fmt(it.rate)} = ₹${fmt(it.amount)}</span>
               </div>
             `).join('')}
-            <div class="detail-row amount" style="border-top:1px solid rgba(20,92,67,0.1);margin-top:8px;padding-top:8px;">
-              <span class="label">Total:</span>
-              <span class="value">₹${fmt(d.totalAmount)}</span>
+            <div class="detail-row total-row">
+              <span class="label">Total Amount:</span>
+              <span class="value" style="color:var(--debit);">₹${fmt(d.totalAmount)}</span>
             </div>
-            ${d.receiver?`<div class="receiver-box"><span class="label">📦 From:</span> ${esc(d.receiver)} ${d.receiverDetail?`(${esc(d.receiverDetail)})`:''}</div>`:''}
+            ${d.receiver?`
+              <div class="receiver-box">
+                <span>📦 From: ${esc(d.receiver)} ${d.receiverDetail?`(${esc(d.receiverDetail)})`:''}</span>
+              </div>
+            `:''}
           </div>
         </div>
       </div>`;
@@ -2256,8 +2350,8 @@ function populatePayments(resetPage){
 
   setRows('#paymentsTable tbody', all.slice(0,pageState.payments).map(r=>`
     <tr>
-      <td>${formatDateDisplay(r[0])}</td><td>${esc(r[1])}</td><td>${esc(r[2])}</td>
-      <td class="amt-cell">${fmt(r[3]||0)}</td><td class="amt-cell">${fmt(r[4]||0)}</td>
+      <td>${formatDateDisplay(r[0])}</td><td>${esc(r[1])}</td><td style="font-weight:700;">${esc(r[2])}</td>
+      <td class="amt-cell" style="color:var(--debit);">${fmt(r[3]||0)}</td><td class="amt-cell" style="color:var(--credit);">${fmt(r[4]||0)}</td>
       <td>${esc(r[5]||'')}</td>
     </tr>`));
   renderMoreBtn('payments','paymentsMoreWrap',all.length);
@@ -2284,68 +2378,127 @@ function showLedger(){
   }
   currentLedgerParty = partyName;
 
-  const partySales = (allData.sales || []).slice(1).filter(r => r[2] === partyName && (parseFloat(r[4]) || 0) > 0);
-  const saleGroups = {};
-  partySales.forEach((r, idx) => {
-    const billKey = 'sale_' + (r[1] ? String(r[1]).trim() : ('nobill_' + r[0] + '_' + idx));
-    if (!saleGroups[billKey]) {
-      saleGroups[billKey] = {
+  // 1. Sales Bill Groups
+  const allSales = (allData.sales || []).slice(1);
+  const saleBillGroups = {};
+  
+  for(let i = 0; i < allSales.length; i++){
+    const r = allSales[i];
+    const qty = parseFloat(r[4]) || 0;
+    const bill = String(r[1] || '').trim();
+    if(!bill) continue;
+
+    if(!saleBillGroups[bill]){
+      saleBillGroups[bill] = {
         date: r[0],
-        bill: r[1] || '-',
+        bill: r[1],
+        party: r[2],
         kind: 'sale',
         items: [],
         debit: 0,
         credit: 0,
-        receiver: r[8] || ''
+        receiver: '',
+        receiverDetail: ''
       };
     }
-    const qty = parseFloat(r[4]) || 0;
-    const rate = parseFloat(r[6]) || 0;
-    const amt = parseFloat(r[7]) || (qty * rate);
-    saleGroups[billKey].items.push({
-      item: r[3] || 'Item',
-      qty: qty,
-      unit: r[5] || '',
-      rate: rate,
-      amount: amt
-    });
-    saleGroups[billKey].debit += amt;
-    if (r[8] && !saleGroups[billKey].receiver) {
-      saleGroups[billKey].receiver = r[8];
-    }
-  });
 
-  const partyPurchases = (allData.purchase || []).slice(1).filter(r => r[2] === partyName && (parseFloat(r[4]) || 0) > 0);
-  const purchaseGroups = {};
-  partyPurchases.forEach((r, idx) => {
-    const billKey = 'purc_' + (r[1] ? String(r[1]).trim() : ('nobill_' + r[0] + '_' + idx));
-    if (!purchaseGroups[billKey]) {
-      purchaseGroups[billKey] = {
+    if(r[8]){
+      const recStr = String(r[8]).trim();
+      if(recStr.includes(':')){
+        const parts = recStr.split(':');
+        saleBillGroups[bill].receiver = parts[0].trim();
+        saleBillGroups[bill].receiverDetail = parts[1].trim();
+      } else {
+        saleBillGroups[bill].receiver = recStr;
+      }
+    }
+
+    if(qty > 0){
+      const rate = parseFloat(r[6]) || 0;
+      const amt = parseFloat(r[7]) || (qty * rate);
+      saleBillGroups[bill].items.push({
+        item: r[3],
+        qty: qty,
+        unit: r[5],
+        rate: rate,
+        amount: amt
+      });
+      saleBillGroups[bill].debit += amt;
+    } else if(qty === 0 && r[3]){
+      const recStr = String(r[3]).trim();
+      if(recStr.includes(':')){
+        const parts = recStr.split(':');
+        saleBillGroups[bill].receiver = (parts[0] || '').trim();
+        saleBillGroups[bill].receiverDetail = (parts[1] || '').trim();
+      } else if(recStr){
+        saleBillGroups[bill].receiver = recStr;
+      }
+    }
+  }
+
+  // 2. Purchase Bill Groups
+  const allPurchase = (allData.purchase || []).slice(1);
+  const purchaseBillGroups = {};
+  
+  for(let i = 0; i < allPurchase.length; i++){
+    const r = allPurchase[i];
+    const qty = parseFloat(r[4]) || 0;
+    const bill = String(r[1] || '').trim();
+    if(!bill) continue;
+
+    if(!purchaseBillGroups[bill]){
+      purchaseBillGroups[bill] = {
         date: r[0],
-        bill: r[1] || '-',
+        bill: r[1],
+        party: r[2],
         kind: 'purchase',
         items: [],
         debit: 0,
         credit: 0,
-        receiver: r[8] || ''
+        receiver: '',
+        receiverDetail: ''
       };
     }
-    const qty = parseFloat(r[4]) || 0;
-    const rate = parseFloat(r[6]) || 0;
-    const amt = parseFloat(r[7]) || (qty * rate);
-    purchaseGroups[billKey].items.push({
-      item: r[3] || 'Item',
-      qty: qty,
-      unit: r[5] || '',
-      rate: rate,
-      amount: amt
-    });
-    purchaseGroups[billKey].credit += amt;
-    if (r[8] && !purchaseGroups[billKey].receiver) {
-      purchaseGroups[billKey].receiver = r[8];
-    }
-  });
 
+    if(r[8]){
+      const recStr = String(r[8]).trim();
+      if(recStr.includes(':')){
+        const parts = recStr.split(':');
+        purchaseBillGroups[bill].receiver = parts[0].trim();
+        purchaseBillGroups[bill].receiverDetail = parts[1].trim();
+      } else {
+        purchaseBillGroups[bill].receiver = recStr;
+      }
+    }
+
+    if(qty > 0){
+      const rate = parseFloat(r[6]) || 0;
+      const amt = parseFloat(r[7]) || (qty * rate);
+      purchaseBillGroups[bill].items.push({
+        item: r[3],
+        qty: qty,
+        unit: r[5],
+        rate: rate,
+        amount: amt
+      });
+      purchaseBillGroups[bill].credit += amt;
+    } else if(qty === 0 && r[3]){
+      const recStr = String(r[3]).trim();
+      if(recStr.includes(':')){
+        const parts = recStr.split(':');
+        purchaseBillGroups[bill].receiver = (parts[0] || '').trim();
+        purchaseBillGroups[bill].receiverDetail = (parts[1] || '').trim();
+      } else if(recStr){
+        purchaseBillGroups[bill].receiver = recStr;
+      }
+    }
+  }
+
+  // 3. Selected Party ke Sales aur Purchase filter karo
+  const partySales = Object.values(saleBillGroups).filter(b => b.party === partyName && b.items.length > 0);
+  const partyPurchase = Object.values(purchaseBillGroups).filter(b => b.party === partyName && b.items.length > 0);
+
+  // 4. Receipts aur Payments
   const partyReceipts = (allData.receipts || []).slice(1).filter(r => r[2] === partyName).map(r => ({
     date: r[0],
     bill: r[1] || '-',
@@ -2354,7 +2507,8 @@ function showLedger(){
     particulars: r[5] || 'Payment Received (रुपये जमा)',
     debit: parseFloat(r[3]) || 0,
     credit: parseFloat(r[4]) || 0,
-    receiver: ''
+    receiver: '',
+    receiverDetail: ''
   }));
 
   const partyPayments = (allData.payments || []).slice(1).filter(r => r[2] === partyName).map(r => ({
@@ -2365,22 +2519,26 @@ function showLedger(){
     particulars: r[5] || 'Payment Made (भुगतान किया)',
     debit: parseFloat(r[3]) || 0,
     credit: parseFloat(r[4]) || 0,
-    receiver: ''
+    receiver: '',
+    receiverDetail: ''
   }));
 
+  // 5. Date-wise sort karo
   const trans = [
-    ...Object.values(saleGroups),
-    ...Object.values(purchaseGroups),
+    ...partySales,
+    ...partyPurchase,
     ...partyReceipts,
     ...partyPayments
   ].sort((a, b) => parseIndianDate(a.date) - parseIndianDate(b.date));
 
+  // 6. Opening balance
   const masterRow = (allData.masters || []).slice(1).find(r => r[1] === partyName);
   const openingAmt = masterRow ? parseFloat(masterRow[4]) || 0 : 0;
   const openingDebit = openingAmt && !isCreditorType(masterRow[2]) ? openingAmt : 0;
   const openingCredit = openingAmt && isCreditorType(masterRow[2]) ? openingAmt : 0;
   currentLedgerPhone = masterRow ? String(masterRow[3] || '').trim() : '';
 
+  // 7. Running Balance calculate karo aur Cards banao
   let balance = openingDebit - openingCredit;
   let totalDebit = openingDebit;
   let totalCredit = openingCredit;
@@ -2407,9 +2565,20 @@ function showLedger(){
       detailsHtml = `
         <div class="detail-row">
           <span class="label">विवरण:</span>
-          <span class="value" style="font-weight:600;">${esc(t.particulars)}</span>
+          <span class="value" style="font-weight:700;">${esc(t.particulars)}</span>
         </div>
       `;
+    }
+
+    const isDirect = (val) => !val || /^direct$/i.test(String(val).trim());
+    let receiverText = '';
+    if(t.receiver && !isDirect(t.receiver)){
+      receiverText = esc(t.receiver);
+      if(t.receiverDetail && !isDirect(t.receiverDetail)){
+        receiverText += ` (${esc(t.receiverDetail)})`;
+      }
+    } else if(t.receiverDetail && !isDirect(t.receiverDetail)){
+      receiverText = esc(t.receiverDetail);
     }
 
     cardsHtml.push(`
@@ -2417,26 +2586,30 @@ function showLedger(){
         <div class="entry-head">
           <span class="tag ${meta.tag}">${meta.label}</span>
           <span class="entry-date">${formatDateDisplay(t.date)}</span>
-          <span class="entry-bill">${esc(t.bill)}</span>
+          <span class="entry-bill">#${esc(t.bill)}</span>
         </div>
         <div class="entry-body">
           <div class="entry-details">
             ${detailsHtml}
             ${t.debit ? `
-            <div class="detail-row amount" style="border-top:1px solid rgba(20,92,67,0.1);margin-top:6px;padding-top:6px;">
+            <div class="detail-row total-row">
               <span class="label">कुल Debit (+):</span>
-              <span class="value" style="color:var(--debit);font-weight:700;">₹${fmt(t.debit)}</span>
+              <span class="value" style="color:var(--debit);font-weight:800;">₹${fmt(t.debit)}</span>
             </div>` : ''}
             ${t.credit ? `
-            <div class="detail-row amount" style="border-top:1px solid rgba(20,92,67,0.1);margin-top:6px;padding-top:6px;">
+            <div class="detail-row total-row">
               <span class="label">जमा Credit (-):</span>
-              <span class="value" style="color:var(--credit);font-weight:700;">₹${fmt(t.credit)}</span>
+              <span class="value" style="color:var(--credit);font-weight:800;">₹${fmt(t.credit)}</span>
             </div>` : ''}
-            <div class="detail-row amount">
+            <div class="detail-row balance-highlight">
               <span class="label">बचा बैलेंस:</span>
-              <span class="value" style="color:${balColor};font-weight:800;">${fmt(Math.abs(balance))}</span>
+              <span class="value" style="color:${balColor};">₹${fmt(Math.abs(balance))}</span>
             </div>
-            ${t.receiver ? `<div class="receiver-box"><span class="label">📦 ${t.kind === 'purchase' ? 'From' : 'Delivered to'}:</span> ${esc(t.receiver)}</div>` : ''}
+            ${receiverText ? `
+              <div class="receiver-box">
+                <span>📦 ${t.kind === 'purchase' ? 'From' : 'Delivered to'}: ${receiverText}</span>
+              </div>
+            ` : ''}
           </div>
         </div>
       </div>
@@ -2448,22 +2621,22 @@ function showLedger(){
   if (openingAmt) {
     const balColor0 = (openingDebit - openingCredit) > 0 ? 'var(--credit)' : (openingDebit - openingCredit) < 0 ? 'var(--debit)' : 'var(--ink-soft)';
     rowsHtml.push(`
-      <div class="entry-card" style="border-left:4px solid var(--gold); background:#FFFDF7;">
+      <div class="entry-card" style="border-left-color:var(--gold); background:#FFFDF7;">
         <div class="entry-head">
-          <span class="tag" style="background:var(--gold-soft);color:var(--cover-dark);border:1px solid var(--gold);">🏛️ Opening Balance</span>
+          <span class="tag" style="background:var(--gold-soft);color:var(--gold);border:1px solid var(--gold);">🏛️ Opening Balance</span>
           <span style="flex:1;"></span>
         </div>
         <div class="entry-body">
           <div class="entry-details">
             <div class="detail-row">
               <span class="label">विवरण:</span>
-              <span class="value">शुरुआती बैलेंस (Opening)</span>
+              <span class="value" style="font-weight:700;">शुरुआती बैलेंस (Opening)</span>
             </div>
             ${openingDebit ? `<div class="detail-row"><span class="label">Debit (+):</span><span class="value" style="color:var(--debit);font-weight:700;">₹${fmt(openingDebit)}</span></div>` : ''}
             ${openingCredit ? `<div class="detail-row"><span class="label">Credit (-):</span><span class="value" style="color:var(--credit);font-weight:700;">₹${fmt(openingCredit)}</span></div>` : ''}
-            <div class="detail-row amount">
+            <div class="detail-row balance-highlight">
               <span class="label">बैलेंस:</span>
-              <span class="value" style="color:${balColor0};font-weight:800;">${fmt(Math.abs(openingDebit - openingCredit))}</span>
+              <span class="value" style="color:${balColor0};">₹${fmt(Math.abs(openingDebit - openingCredit))}</span>
             </div>
           </div>
         </div>
